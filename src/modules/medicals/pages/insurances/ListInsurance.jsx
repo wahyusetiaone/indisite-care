@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { fetchAllInsuranceTypes } from "@/services/medicals/InsuranceTypeService";
+import { fetchAllInsuranceTypes, deleteInsuranceType } from "@/services/medicals/InsuranceTypeService";
 import { useLoaderTablePagination } from "@/helper/loaderTablePagination";
+import ShowInsuranceModal from "./ShowInsuranceModal";
 
 const ListInsurance = () => {
     const {
@@ -26,23 +27,34 @@ const ListInsurance = () => {
     });
 
     const [searchQuery, setSearchQuery] = useState("");
+    const [showModal, setShowModal] = useState(null);
 
     const onSearchSubmit = (e) => {
         e.preventDefault();
         handleSearch(searchQuery);
     };
 
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this insurance type?")) return;
+        try {
+            await deleteInsuranceType(id);
+            fetchData();
+        } catch (err) {
+            alert("Failed to delete insurance type");
+        }
+    };
+
     return (
         <div className="col-lg-12">
             <div className="card">
                 <div className="card-header border-bottom">
-                    <h4 className="card-title mb-3">List Insurance Types</h4>
+                    <h4 className="card-title mb-3">Daftar Jenis Asuransi</h4>
                     <div className="d-flex align-items-center">
                         <form className="navbar-search d-flex me-2" onSubmit={onSearchSubmit}>
                             <input
                                 type="text"
                                 name="search"
-                                placeholder="Search"
+                                placeholder="Cari"
                                 className="form-control"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -68,7 +80,7 @@ const ListInsurance = () => {
                             className="btn bg-primary-light text-primary-600 rounded d-flex align-items-center ms-auto"
                         >
                             <Icon icon="ant-design:plus-outlined" className="icon me-2" />
-                            Add Insurance Type
+                            Tambah Jenis Asuransi
                         </Link>
                     </div>
                 </div>
@@ -76,18 +88,18 @@ const ListInsurance = () => {
                     <div className="table-responsive">
                         {loading ? (
                             <div className="text-center">
-                                <p>Loading...</p>
+                                <p>Memuat...</p>
                             </div>
                         ) : (
                             <table className="table striped-table mb-0">
                                 <thead>
                                     <tr>
                                         <th scope="col">No</th>
-                                        <th scope="col">Name</th>
+                                        <th scope="col">Nama</th>
                                         <th scope="col" className="text-center">
                                             Status
                                         </th>
-                                        <th scope="col" className="text-center">Action</th>
+                                        <th scope="col" className="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -104,25 +116,39 @@ const ListInsurance = () => {
                                                             : 'bg-secondary text-secondary-dark'
                                                         }`}
                                                     >
-                                                      {insurance.is_active ? 'Active' : 'Inactive'}
+                                                      {insurance.is_active ? 'Aktif' : 'Tidak Aktif'}
                                                     </span>
                                                 </td>
                                                 <td className="text-center">
-                                                    <button className="btn btn-sm btn-info me-1" title="View">
-                                                        <Icon icon="mdi:eye-outline" />
-                                                    </button>
-                                                    <button className="btn btn-sm btn-warning me-1" title="Edit">
-                                                        <Icon icon="mdi:pencil-outline" />
-                                                    </button>
-                                                    <button className="btn btn-sm btn-danger" title="Delete">
-                                                        <Icon icon="mdi:delete-outline" />
-                                                    </button>
+                                                    <Link
+                                                        href="#"
+                                                        className="w-32-px h-32-px me-8 bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        title="Lihat"
+                                                        onClick={() => setShowModal(insurance.id)}
+                                                    >
+                                                        <Icon icon="iconamoon:eye-light" />
+                                                    </Link>
+                                                    <Link
+                                                        className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        href={`/page/clinic/insurances/${insurance.id}`}
+                                                        title="Edit"
+                                                    >
+                                                        <Icon icon="lucide:edit" />
+                                                    </Link>
+                                                    <Link
+                                                        href="#"
+                                                        className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        title="Hapus"
+                                                        onClick={() => handleDelete(insurance.id)}
+                                                    >
+                                                        <Icon icon="mingcute:delete-2-line" />
+                                                    </Link>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="text-center">No data</td>
+                                            <td colSpan={5} className="text-center">Tidak ada data</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -130,19 +156,36 @@ const ListInsurance = () => {
                         )}
                     </div>
                 </div>
-                <div className="card-footer d-flex justify-content-between align-items-center">
-                    <div>
-                        Page {pagination?.page} of {pagination?.totalPages || 1}
-                    </div>
-                    <div>
-                        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => goToPage(pagination.page - 1)} disabled={pagination.page === 1}>
-                            Previous
-                        </button>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={() => goToPage(pagination.page + 1)} disabled={pagination.page === pagination.totalPages}>
-                            Next
-                        </button>
+                <div className="card-footer">
+                    <div className="text-center">
+                        <ul className='pagination d-flex flex-wrap align-items-center gap-2 justify-content-center mt-24'>
+                            <li className='page-item'>
+                                <button
+                                    disabled={pagination.page === 1}
+                                    className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
+                                    onClick={() => goToPage(pagination.page - 1)}
+                                >
+                                    Sebelumnya
+                                </button>
+                            </li>
+                            <span>
+                                Halaman {pagination.page} dari {pagination.totalPages || 1}
+                            </span>
+                            <li className='page-item'>
+                                <button
+                                    disabled={pagination.page >= pagination.totalPages}
+                                    className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
+                                    onClick={() => goToPage(pagination.page + 1)}
+                                >
+                                    Berikutnya
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+                {showModal && (
+                    <ShowInsuranceModal id={showModal} onClose={() => setShowModal(null)} />
+                )}
             </div>
         </div>
     );

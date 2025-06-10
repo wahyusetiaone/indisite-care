@@ -39,3 +39,9 @@ export const deleteTreatmentType = async (id: string) => {
   const response = await axiosWithAuth.delete(`/treatment-types/${id}`);
   return response.data;
 };
+
+export const fetchAllDataTreatmentTypes = async (searchQuery: string | null = null) => {
+  const params = searchQuery ? { searchQuery: searchQuery } : {};
+  const response = await axiosWithAuth.get("/treatment-types-all", { params });
+  return response.data;
+};

@@ -39,3 +39,9 @@ export const deletePolyclinic = async (id: string) => {
   const response = await axiosWithAuth.delete(`/polyclinics/${id}`);
   return response.data;
 };
+
+export const fetchAllDataPolyclinics = async (searchQuery: string | null = null) => {
+  const params = searchQuery ? { searchQuery: searchQuery } : {};
+  const response = await axiosWithAuth.get("/polyclinics-all", { params });
+  return response.data;
+};

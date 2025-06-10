@@ -77,12 +77,12 @@ export default function CreateSchedule() {
                   type="number"
                   name="doctor_id"
                   className="form-control"
-                  placeholder="Enter Doctor ID"
+                  placeholder="Masukkan ID Dokter"
                   value={form.doctor_id}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide doctor ID</div>
+                <div className="invalid-feedback">Silakan masukkan ID Dokter</div>
               </div>
             </div>
             <div className="col-md-6">
@@ -95,12 +95,12 @@ export default function CreateSchedule() {
                   type="number"
                   name="polyclinic_id"
                   className="form-control"
-                  placeholder="Enter Polyclinic ID"
+                  placeholder="Masukkan ID Poliklinik"
                   value={form.polyclinic_id}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide polyclinic ID</div>
+                <div className="invalid-feedback">Silakan masukkan ID Poliklinik</div>
               </div>
             </div>
             <div className="col-md-6">
@@ -169,4 +169,3 @@ export default function CreateSchedule() {
     </div>
   );
 }
-

@@ -38,4 +38,10 @@ export const updatePatient = async (id, data) => {
 export const deletePatient = async (id) => {
   const response = await axiosWithAuth.delete(`/patients/${id}`);
   return response.data;
-}
+};
+
+export const fetchAllDataPatients = async (searchQuery: string | null = null) => {
+  const params = searchQuery ? { searchQuery: searchQuery } : {};
+  const response = await axiosWithAuth.get("/patients-all", { params });
+  return response.data;
+};

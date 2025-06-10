@@ -1,4 +1,4 @@
-import { createAxiosWithAuth } from "@/helper/axiosHelper";
+import {createAxiosWithAuth, createAxiosWithoutAuth} from "@/helper/axiosHelper";
 import {
     FetchAllInsuranceTypesParams,
     FetchAllInsuranceTypesResponse,
@@ -37,5 +37,11 @@ export const updateInsuranceType = async (id: string, data: UpdateInsuranceTypeD
 
 export const deleteInsuranceType = async (id: string) => {
     const response = await axiosWithAuth.delete(`/insurance-types/${id}`);
+    return response.data;
+};
+
+export const fetchAllDataInsuranceTypes = async (searchQuery: string | null = null) => {
+    const params = searchQuery ? { searchQuery: searchQuery } : {};
+    const response = await axiosWithAuth.get("/insurance-types-all", { params });
     return response.data;
 };

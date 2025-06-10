@@ -36,12 +36,12 @@ const ListDoctor = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this doctor?")) return;
+        if (!window.confirm("Apakah Anda yakin ingin menghapus dokter ini?")) return;
         try {
             await deleteDoctor(id);
             fetchData();
         } catch (err) {
-            alert("Failed to delete doctor");
+            alert("Gagal menghapus dokter");
         }
     };
 
@@ -49,13 +49,13 @@ const ListDoctor = () => {
         <div className="col-lg-12">
             <div className="card">
                 <div className="card-header border-bottom">
-                    <h4 className="card-title mb-3">List Doctor</h4>
+                    <h4 className="card-title mb-3">Daftar Dokter</h4>
                     <div className="d-flex align-items-center">
                         <form className="navbar-search d-flex me-2" onSubmit={onSearchSubmit}>
                             <input
                                 type="text"
                                 name="search"
-                                placeholder="Search"
+                                placeholder="Cari"
                                 className="form-control"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -81,7 +81,7 @@ const ListDoctor = () => {
                             className="btn bg-primary-light text-primary-600 rounded d-flex align-items-center ms-auto"
                         >
                             <Icon icon="ant-design:plus-outlined" className="icon me-2" />
-                            Add Doctor
+                            Tambah Dokter
                         </Link>
                     </div>
                 </div>
@@ -89,19 +89,19 @@ const ListDoctor = () => {
                     <div className="table-responsive">
                         {loading ? (
                             <div className="text-center">
-                                <p>Loading...</p>
+                                <p>Memuat...</p>
                             </div>
                         ) : (
                             <table className="table striped-table mb-0">
                                 <thead>
                                     <tr>
                                         <th scope="col">No</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Specialty</th>
+                                        <th scope="col">Nama</th>
+                                        <th scope="col">Spesialisasi</th>
                                         <th scope="col" className="text-center">
                                             Status
                                         </th>
-                                        <th scope="col" className="text-center">Action</th>
+                                        <th scope="col" className="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -113,14 +113,14 @@ const ListDoctor = () => {
                                                 <td>{doctor.specialty || '-'}</td>
                                                 <td className="text-center">
                                                     <span className="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">
-                                                        {doctor.is_active ? "Active" : "Inactive"}
+                                                        {doctor.is_active ? "Aktif" : "Tidak Aktif"}
                                                     </span>
                                                 </td>
                                                 <td className="text-center">
                                                     <Link
                                                         href='#'
                                                         className='w-32-px h-32-px me-8 bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center'
-                                                        title="View"
+                                                        title="Lihat"
                                                         onClick={() => setShowModal(doctor.id)}
                                                     >
                                                         <Icon icon='iconamoon:eye-light' />
@@ -135,7 +135,7 @@ const ListDoctor = () => {
                                                     <Link
                                                         href='#'
                                                         className='w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center'
-                                                        title="Delete"
+                                                        title="Hapus"
                                                         onClick={() => handleDelete(doctor.id)}
                                                     >
                                                         <Icon icon='mingcute:delete-2-line' />
@@ -145,7 +145,7 @@ const ListDoctor = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="text-center">No data</td>
+                                            <td colSpan={5} className="text-center">Tidak ada data</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -162,11 +162,11 @@ const ListDoctor = () => {
                                     className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
                                     onClick={prevPage}
                                 >
-                                    Previous
+                                    Sebelumnya
                                 </button>
                             </li>
                             <span>
-                                Page {pagination.currentPage} of {pagination.totalPages}
+                                Halaman {pagination.currentPage} dari {pagination.totalPages}
                             </span>
                             <li className='page-item'>
                                 <button
@@ -174,7 +174,7 @@ const ListDoctor = () => {
                                     className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
                                     onClick={nextPage}
                                 >
-                                    Next
+                                    Berikutnya
                                 </button>
                             </li>
                         </ul>
@@ -189,4 +189,3 @@ const ListDoctor = () => {
 };
 
 export default ListDoctor;
-

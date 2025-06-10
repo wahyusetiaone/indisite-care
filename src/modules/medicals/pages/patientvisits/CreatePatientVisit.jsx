@@ -6,15 +6,29 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 // Import the PDF generation function
 import { generatePatientVisitPdf } from "../../libs/pdfGenerator";
+// Import fetchAllData services
+import { fetchAllDataInsuranceTypes } from "@/services/medicals/InsuranceTypeService";
+import { fetchAllDataVisitTypes } from "@/services/medicals/VisitTypeService";
+import { fetchAllDataTreatmentTypes } from "@/services/medicals/TreatmentTypeService";
+import { fetchAllDataPolyclinics } from "@/services/medicals/PolyclinicService";
+import { fetchAllDataDoctors } from "@/services/medicals/DoctorService";
+import { createPatientVisit} from "@/services/medicals/PatientVisitService";
+import { fetchAllDataPatients } from "@/services/medicals/PatientService";
+import { useRouter } from "next/navigation";
+import { showSuccess, showError } from "@/../contexts/toast";
+import { Modal, Button } from "react-bootstrap";
+import PatientModal from "./PatientModal";
+import SignatureModal from "@/components/SignatureModal";
 
 const CreatePatientVisit = () => {
-    // State to manage the current step of the form wizard (0-5)
+    // State to manage the current step of the form wizard (0-6)
     const [currentStep, setCurrentStep] = useState(0);
 
     // State to hold all form data, structured like PatientVisit
     const [formData, setFormData] = useState({
         // IDs for foreign keys (these would usually be selected from dropdowns and then assigned)
         patient_id: null,
+        responsible_person_id: null,
         insurance_type_id: null,
         visit_type_id: null,
         treatment_type_id: null,
@@ -81,7 +95,37 @@ const CreatePatientVisit = () => {
             email: "",
             is_active: false, // Default boolean value
         },
+        responsible_person: {
+            full_name: "",
+            national_id_number: "",
+            date_of_birth: "",
+            relationship_to_patient: "",
+            gender: "",
+            phone_number: "",
+            address: "",
+        },
+        signature: "", // base64 signature for consent
     });
+    const signaturePadRef = useRef(null);
+
+    // Dropdown data states
+    const [insuranceTypes, setInsuranceTypes] = useState([]);
+    const [visitTypes, setVisitTypes] = useState([]);
+    const [treatmentTypes, setTreatmentTypes] = useState([]);
+    const [polyclinics, setPolyclinics] = useState([]);
+    const [doctors, setDoctors] = useState([]);
+
+    // Patient dropdown and search state
+    const [patientOptions, setPatientOptions] = useState([]);
+    const [patientSearch, setPatientSearch] = useState("");
+    const [isPatientLoading, setIsPatientLoading] = useState(false);
+
+    // Loading state for submit
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Modal state for patient modal
+    const [showPatientModal, setShowPatientModal] = useState(false);
+    const [showSignatureModal, setShowSignatureModal] = useState(false);
 
     // Handle input changes with nested state updates
     const handleChange = (e) => {
@@ -121,6 +165,7 @@ const CreatePatientVisit = () => {
 
     // Ref to access the form element and its fieldsets
     const formRef = useRef(null);
+    const router = useRouter();
 
     // Effect to manage step visibility and active classes
     useEffect(() => {
@@ -149,7 +194,7 @@ const CreatePatientVisit = () => {
     // Function to handle moving to the next step
     const handleNext = () => {
         // You might add validation here before moving to the next step
-        setCurrentStep((prevStep) => Math.min(prevStep + 1, 5)); // Max step index is 5 for 'Completed'
+        setCurrentStep((prevStep) => Math.min(prevStep + 1, 7)); // Max step index is 6 for 'Completed'
     };
 
     // Function to handle moving to the previous step
@@ -158,13 +203,19 @@ const CreatePatientVisit = () => {
     };
 
     // Function to handle form submission (on the last step)
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Submitted Data:", formData);
-        alert("Patient visit creation process completed! Check console for data.");
-        // Optional: Generate PDF on form submission
-        // generatePatientVisitPdf(formData);
-        // Redirect or show success message
+        setIsSubmitting(true);
+        try {
+            const response = await createPatientVisit(formData);
+            showSuccess("Patient visit created successfully!");
+            router.push("/page/clinic/patientvisits");
+        } catch (error) {
+            showError("Failed to create patient visit. See console for details.");
+            console.error("API Error:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // Handler for the PDF button
@@ -172,22 +223,142 @@ const CreatePatientVisit = () => {
         generatePatientVisitPdf(formData); // Pass the formData to the utility function
     };
 
+    // Fetch dropdown data on mount
+    useEffect(() => {
+        fetchAllDataInsuranceTypes().then(res => setInsuranceTypes(res.data));
+        fetchAllDataVisitTypes().then(res => setVisitTypes(res.data));
+        fetchAllDataTreatmentTypes().then(res => setTreatmentTypes(res.data));
+        fetchAllDataPolyclinics().then(res => setPolyclinics(res.data));
+        fetchAllDataDoctors().then(res => setDoctors(res.data));
+    }, []);
+
+    // Fetch patients for dropdown (with search)
+    useEffect(() => {
+        let active = true;
+        setIsPatientLoading(true);
+        fetchAllDataPatients(patientSearch)
+            .then(res => {
+                console.log("Fetched patients:", res.data);
+                if (active) setPatientOptions(res.data || []);
+            })
+            .finally(() => { if (active) setIsPatientLoading(false); });
+        return () => { active = false; };
+    }, [patientSearch]);
+
+    // Open/close modal handlers
+    const handleOpenPatientModal = () => setShowPatientModal(true);
+    const handleClosePatientModal = () => setShowPatientModal(false);
+
+    // Handle patient selection from modal list
+    const handlePatientSelectFromModal = (selectedPatient) => {
+        setFormData(prev => ({
+            ...prev,
+            patient_id: selectedPatient.id,
+            patient: {
+                identity: { ...selectedPatient.identity },
+                address: { ...selectedPatient.address },
+                social: { ...selectedPatient.social },
+            }
+        }));
+        setShowPatientModal(false);
+    };
+
+    // Handler for insurance select
+    const handleInsuranceSelect = (e) => {
+        const selectedName = e.target.value;
+        setFormData((prevData) => {
+            const selected = insuranceTypes.find((item) => item.name === selectedName);
+            return {
+                ...prevData,
+                insurance_type: selected
+                    ? { ...selected }
+                    : { name: '', description: '', is_active: false },
+                insurance_type_id: selected ? selected.id : null,
+            };
+        });
+    };
+
+    // Handler for visit type select
+    const handleVisitTypeSelect = (e) => {
+        const selectedName = e.target.value;
+        setFormData((prevData) => {
+            const selected = visitTypes.find((item) => item.name === selectedName);
+            return {
+                ...prevData,
+                visit_type: selected
+                    ? { ...selected }
+                    : { name: '', description: '', isActive: false },
+                visit_type_id: selected ? selected.id : null,
+            };
+        });
+    };
+
+    // Handler for treatment type select
+    const handleTreatmentTypeSelect = (e) => {
+        const selectedName = e.target.value;
+        setFormData((prevData) => {
+            const selected = treatmentTypes.find((item) => item.name === selectedName);
+            return {
+                ...prevData,
+                treatment_type: selected
+                    ? { ...selected }
+                    : { name: '', category: '', is_active: false },
+                treatment_type_id: selected ? selected.id : null,
+            };
+        });
+    };
+
+    // Handler for polyclinic select
+    const handlePolyclinicSelect = (e) => {
+        const selectedName = e.target.value;
+        setFormData((prevData) => {
+            const selected = polyclinics.find((item) => item.name === selectedName);
+            return {
+                ...prevData,
+                polyclinic: selected
+                    ? { ...selected }
+                    : { name: '', floor: '', room_number: '', is_active: false },
+                polyclinic_id: selected ? selected.id : null,
+            };
+        });
+    };
+
+    // Handler for doctor select
+    const handleDoctorSelect = (e) => {
+        const selectedName = e.target.value;
+        setFormData((prevData) => {
+            const selected = doctors.find((item) => item.name === selectedName);
+            return {
+                ...prevData,
+                doctor: selected
+                    ? { ...selected }
+                    : { name: '', specialty: '', phone: '', email: '', is_active: false },
+                doctor_id: selected ? selected.id : null,
+            };
+        });
+    };
+
+    // Handler for signature from modal
+    const handleSignatureSave = (dataUrl) => {
+        setFormData((prev) => ({ ...prev, signature: dataUrl }));
+    };
+
     return (
         <div className="col-lg-12">
             <div className="card">
                 <div className="card-header border-bottom">
                     <Link
-                        href="page/clinic/patientvisits"
+                        href="../patientvisits"
                         className="d-flex align-items-center text-primary-600"
                         style={{ textDecoration: 'none' }}
                     >
                         <Icon icon="ic:round-arrow-back" className="icon me-2" style={{ fontSize: '1.5rem' }} />
-                        <h4 className="card-title mb-0">Create Patient Visit</h4>
+                        <h4 className="card-title mb-0">Buat Kunjungan Pasien</h4>
                     </Link>
                 </div>
                 <div className="card-body">
-                    <h6 className="mb-4 text-xl">Registration Step Fill Step</h6>
-                    <p className="text-neutral-500">Fill up your details and proceed next steps.</p>
+                    <h6 className="mb-4 text-xl">Langkah Registrasi</h6>
+                    <p className="text-neutral-500">Isi detail Anda dan lanjutkan ke langkah berikutnya.</p>
 
                     {/* Form Wizard Start */}
                     <div className="form-wizard">
@@ -198,71 +369,113 @@ const CreatePatientVisit = () => {
                                         <div className="form-wizard-list__line">
                                             <span className="count">1</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Identity Patient</span>
+                                        <span className="text text-xs fw-semibold">Identitas Pasien</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 1 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">2</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Insurance</span>
+                                        <span className="text text-xs fw-semibold">Penanggung Jawab</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 2 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">3</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">On Visit</span>
+                                        <span className="text text-xs fw-semibold">Asuransi</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 3 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">4</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Treatment</span>
+                                        <span className="text text-xs fw-semibold">Kunjungan</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 4 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">5</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Polyclinic</span>
+                                        <span className="text text-xs fw-semibold">Tindakan</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 5 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">6</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Completed</span>
+                                        <span className="text text-xs fw-semibold">Poliklinik</span>
+                                    </li>
+                                    <li className={`form-wizard-list__item ${currentStep >= 6 ? "active" : ""}`}>
+                                        <div className="form-wizard-list__line">
+                                            <span className="count">7</span>
+                                        </div>
+                                        <span className="text text-xs fw-semibold">Persetujuan</span>
+                                    </li>
+                                    <li className={`form-wizard-list__item ${currentStep >= 7 ? "active" : ""}`}>
+                                        <div className="form-wizard-list__line">
+                                            <span className="count">8</span>
+                                        </div>
+                                        <span className="text text-xs fw-semibold">Selesai</span>
                                     </li>
                                 </ul>
                             </div>
 
                             {/* Step 1: Identity Patient */}
                             <fieldset className={`wizard-fieldset ${currentStep === 0 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">Patient Identity & Address</h6>
                                 <div className="row gy-3">
+                                    {/* Patient Modal Search Button */}
+                                    <div className="col-12 d-flex align-items-center mb-2">
+                                        <div className="w-100 d-flex flex-column align-items-center">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                                                style={{ width: 300 }}
+                                                onClick={handleOpenPatientModal}
+                                            >
+                                                <Icon icon="ic:round-search" className="me-2" /> Cari Pasien
+                                            </button>
+                                            <div className="w-100 text-center mt-2">
+                                                <span className="text-bold">Atau daftarkan Pasien Baru dengan mengisi form di bawah ini</span>
+                                            </div>
+                                        </div>
+                                        {formData.patient.identity.full_name && (
+                                            <span className="ms-3 text-success">{formData.patient.identity.full_name}</span>
+                                        )}
+                                    </div>
+                                    {/* Patient Modal */}
+                                    <PatientModal
+                                        show={showPatientModal}
+                                        onHide={handleClosePatientModal}
+                                        patientSearch={patientSearch}
+                                        setPatientSearch={setPatientSearch}
+                                        isPatientLoading={isPatientLoading}
+                                        patientOptions={patientOptions}
+                                        onSelectPatient={handlePatientSelectFromModal}
+                                    />
+
+                                    <h6 className="text-md text-neutral-500">Identitas Pasien</h6>
                                     {/* PatientIdentity Fields */}
                                     <div className="col-sm-6">
-                                        <label className="form-label">Full Name*</label>
-                                        <input type="text" name="patient.identity.full_name" className="form-control wizard-required" placeholder="Enter Full Name" required value={formData.patient.identity.full_name} onChange={handleChange} />
+                                        <label className="form-label">Nama Lengkap*</label>
+                                        <input type="text" name="patient.identity.full_name" className="form-control wizard-required" placeholder="Masukkan Nama Lengkap" value={formData.patient.identity.full_name} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Phone Number*</label>
-                                        <input type="text" name="patient.identity.phone_number" className="form-control wizard-required" placeholder="Enter Phone Number" required value={formData.patient.identity.phone_number} onChange={handleChange} />
+                                        <label className="form-label">Nomor Telepon*</label>
+                                        <input type="text" name="patient.identity.phone_number" className="form-control wizard-required" placeholder="Masukkan Nomor Telepon" value={formData.patient.identity.phone_number} onChange={handleChange} />
                                     </div>
                                     <div className="col-12">
                                         <label className="form-label">Email*</label>
-                                        <input type="email" name="patient.identity.email" className="form-control wizard-required" placeholder="Enter Email" required value={formData.patient.identity.email} onChange={handleChange} />
+                                        <input type="email" name="patient.identity.email" className="form-control wizard-required" placeholder="Masukkan Email" value={formData.patient.identity.email} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Gender*</label>
-                                        <select name="patient.identity.gender" className="form-control wizard-required" required value={formData.patient.identity.gender} onChange={handleChange}>
-                                            <option value="">Select Gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
+                                        <label className="form-label">Jenis Kelamin*</label>
+                                        <select name="patient.identity.gender" className="form-control wizard-required" value={formData.patient.identity.gender} onChange={handleChange}>
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="Male">Laki-laki</option>
+                                            <option value="Female">Perempuan</option>
+                                            <option value="Other">Lainnya</option>
                                         </select>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Blood Type*</label>
-                                        <select name="patient.identity.blood_type" className="form-control wizard-required" required value={formData.patient.identity.blood_type} onChange={handleChange}>
-                                            <option value="">Select Blood Type</option>
+                                        <label className="form-label">Golongan Darah*</label>
+                                        <select name="patient.identity.blood_type" className="form-control wizard-required" value={formData.patient.identity.blood_type} onChange={handleChange}>
+                                            <option value="">Pilih Golongan Darah</option>
                                             <option value="A+">A+</option>
                                             <option value="A-">A-</option>
                                             <option value="B+">B+</option>
@@ -274,256 +487,341 @@ const CreatePatientVisit = () => {
                                         </select>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Place of Birth*</label>
-                                        <input type="text" name="patient.identity.born" className="form-control wizard-required" placeholder="Enter Place of Birth" required value={formData.patient.identity.born} onChange={handleChange} />
+                                        <label className="form-label">Tempat Lahir*</label>
+                                        <input type="text" name="patient.identity.born" className="form-control wizard-required" placeholder="Masukkan Tempat Lahir" value={formData.patient.identity.born} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Date of Birth*</label>
-                                        <input type="date" name="patient.identity.date_of_birth" className="form-control wizard-required" required value={formData.patient.identity.date_of_birth} onChange={handleChange} />
+                                        <label className="form-label">Tanggal Lahir*</label>
+                                        <input type="date" name="patient.identity.date_of_birth" className="form-control wizard-required" value={formData.patient.identity.date_of_birth} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Identity Type*</label>
-                                        <select name="patient.identity.identity_type" className="form-control wizard-required" required value={formData.patient.identity.identity_type} onChange={handleChange}>
-                                            <option value="">Select Identity Type</option>
+                                        <label className="form-label">Tipe Identitas*</label>
+                                        <select name="patient.identity.identity_type" className="form-control wizard-required" value={formData.patient.identity.identity_type} onChange={handleChange}>
+                                            <option value="">Pilih Tipe Identitas</option>
                                             <option value="KTP">KTP</option>
                                             <option value="SIM">SIM</option>
-                                            <option value="Passport">Passport</option>
+                                            <option value="Passport">Paspor</option>
                                         </select>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Identity Number*</label>
-                                        <input type="text" name="patient.identity.identity_number" className="form-control wizard-required" placeholder="Enter Identity Number" required value={formData.patient.identity.identity_number} onChange={handleChange} />
+                                        <label className="form-label">Nomor Identitas*</label>
+                                        <input type="text" name="patient.identity.identity_number" className="form-control wizard-required" placeholder="Masukkan Nomor Identitas" value={formData.patient.identity.identity_number} onChange={handleChange} />
                                     </div>
                                     <div className="col-12">
-                                        <label className="form-label">Mother's Name*</label>
-                                        <input type="text" name="patient.identity.name_of_mother" className="form-control wizard-required" placeholder="Enter Mother's Name" required value={formData.patient.identity.name_of_mother} onChange={handleChange} />
+                                        <label className="form-label">Nama Ibu*</label>
+                                        <input type="text" name="patient.identity.name_of_mother" className="form-control wizard-required" placeholder="Masukkan Nama Ibu" value={formData.patient.identity.name_of_mother} onChange={handleChange} />
                                     </div>
 
                                     {/* PatientAddress Fields */}
                                     <div className="col-12">
-                                        <h6 className="text-md text-neutral-500 mt-4">Patient Address</h6>
+                                        <h6 className="text-md text-neutral-500 mt-4">Alamat Pasien</h6>
                                     </div>
                                     <div className="col-12">
-                                        <label className="form-label">Full Address*</label>
-                                        <textarea name="patient.address.full_address" className="form-control wizard-required" placeholder="Enter Full Address" required value={formData.patient.address.full_address} onChange={handleChange} rows="3"></textarea>
+                                        <label className="form-label">Alamat Lengkap*</label>
+                                        <textarea name="patient.address.full_address" className="form-control wizard-required" placeholder="Masukkan Alamat Lengkap" value={formData.patient.address.full_address} onChange={handleChange} rows="3"></textarea>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Province*</label>
-                                        <input type="text" name="patient.address.provincy" className="form-control wizard-required" placeholder="Enter Province" required value={formData.patient.address.provincy} onChange={handleChange} />
+                                        <label className="form-label">Provinsi*</label>
+                                        <input type="text" name="patient.address.provincy" className="form-control wizard-required" placeholder="Masukkan Provinsi" value={formData.patient.address.provincy} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">City*</label>
-                                        <input type="text" name="patient.address.city" className="form-control wizard-required" placeholder="Enter City" required value={formData.patient.address.city} onChange={handleChange} />
+                                        <label className="form-label">Kota*</label>
+                                        <input type="text" name="patient.address.city" className="form-control wizard-required" placeholder="Masukkan Kota" value={formData.patient.address.city} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">District*</label>
-                                        <input type="text" name="patient.address.district" className="form-control wizard-required" placeholder="Enter District" required value={formData.patient.address.district} onChange={handleChange} />
+                                        <label className="form-label">Kecamatan*</label>
+                                        <input type="text" name="patient.address.district" className="form-control wizard-required" placeholder="Masukkan Kecamatan" value={formData.patient.address.district} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Village*</label>
-                                        <input type="text" name="patient.address.village" className="form-control wizard-required" placeholder="Enter Village" required value={formData.patient.address.village} onChange={handleChange} />
+                                        <label className="form-label">Kelurahan*</label>
+                                        <input type="text" name="patient.address.village" className="form-control wizard-required" placeholder="Masukkan Kelurahan" value={formData.patient.address.village} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
                                         <label className="form-label">RT/RW*</label>
-                                        <input type="text" name="patient.address.rt_rw" className="form-control wizard-required" placeholder="Enter RT/RW" required value={formData.patient.address.rt_rw} onChange={handleChange} />
+                                        <input type="text" name="patient.address.rt_rw" className="form-control wizard-required" placeholder="Masukkan RT/RW" value={formData.patient.address.rt_rw} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Post Code*</label>
-                                        <input type="text" name="patient.address.post_code" className="form-control wizard-required" placeholder="Enter Post Code" required value={formData.patient.address.post_code} onChange={handleChange} />
+                                        <label className="form-label">Kode Pos*</label>
+                                        <input type="text" name="patient.address.post_code" className="form-control wizard-required" placeholder="Masukkan Kode Pos" value={formData.patient.address.post_code} onChange={handleChange} />
                                     </div>
 
                                     {/* PatientSocial Fields */}
                                     <div className="col-12">
-                                        <h6 className="text-md text-neutral-500 mt-4">Patient Social Information</h6>
+                                        <h6 className="text-md text-neutral-500 mt-4">Informasi Sosial Pasien</h6>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Religion*</label>
-                                        <input type="text" name="patient.social.religion" className="form-control wizard-required" placeholder="Enter Religion" required value={formData.patient.social.religion} onChange={handleChange} />
+                                        <label className="form-label">Agama*</label>
+                                        <input type="text" name="patient.social.religion" className="form-control wizard-required" placeholder="Masukkan Agama" value={formData.patient.social.religion} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Marriage Status</label>
-                                        <input type="text" name="patient.social.marriage_status" className="form-control" placeholder="Enter Marriage Status" value={formData.patient.social.marriage_status} onChange={handleChange} />
+                                        <label className="form-label">Status Pernikahan</label>
+                                        <input type="text" name="patient.social.marriage_status" className="form-control" placeholder="Masukkan Status Pernikahan" value={formData.patient.social.marriage_status} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Education Status</label>
-                                        <input type="text" name="patient.social.education_status" className="form-control" placeholder="Enter Education Status" value={formData.patient.social.education_status} onChange={handleChange} />
+                                        <label className="form-label">Status Pendidikan</label>
+                                        <input type="text" name="patient.social.education_status" className="form-control" placeholder="Masukkan Status Pendidikan" value={formData.patient.social.education_status} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Work*</label>
-                                        <input type="text" name="patient.social.work" className="form-control wizard-required" placeholder="Enter Work" required value={formData.patient.social.work} onChange={handleChange} />
+                                        <label className="form-label">Pekerjaan*</label>
+                                        <input type="text" name="patient.social.work" className="form-control wizard-required" placeholder="Masukkan Pekerjaan" value={formData.patient.social.work} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Language</label>
-                                        <input type="text" name="patient.social.language" className="form-control" placeholder="Enter Language" value={formData.patient.social.language} onChange={handleChange} />
+                                        <label className="form-label">Bahasa</label>
+                                        <input type="text" name="patient.social.language" className="form-control" placeholder="Masukkan Bahasa" value={formData.patient.social.language} onChange={handleChange} />
                                     </div>
 
                                     <div className="form-group text-end mt-4">
-                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Next</button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
                                     </div>
                                 </div>
                             </fieldset>
 
-                            {/* Step 2: Insurance */}
+                            {/* Step 2: Penanggung Jawab */}
                             <fieldset className={`wizard-fieldset ${currentStep === 1 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">Insurance Information</h6>
+                                <h6 className="text-md text-neutral-500">Penanggung Jawab</h6>
+                                <div className="row gy-3">
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Nama Lengkap*</label>
+                                        <input type="text" name="responsible_person.full_name" className="form-control wizard-required" placeholder="Masukkan Nama Lengkap" value={formData.responsible_person?.full_name || ""} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Nomor Identitas*</label>
+                                        <input type="text" name="responsible_person.national_id_number" className="form-control wizard-required" placeholder="Masukkan Nomor Identitas" value={formData.responsible_person?.national_id_number || ""} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Tanggal Lahir*</label>
+                                        <input type="date" name="responsible_person.date_of_birth" className="form-control wizard-required" value={formData.responsible_person?.date_of_birth || ""} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Hubungan dengan Pasien*</label>
+                                        <input type="text" name="responsible_person.relationship_to_patient" className="form-control wizard-required" placeholder="Masukkan Hubungan" value={formData.responsible_person?.relationship_to_patient || ""} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Jenis Kelamin*</label>
+                                        <select name="responsible_person.gender" className="form-control wizard-required" value={formData.responsible_person?.gender || ""} onChange={handleChange}>
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="Male">Laki-laki</option>
+                                            <option value="Female">Perempuan</option>
+                                            <option value="Other">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Nomor Telepon*</label>
+                                        <input type="text" name="responsible_person.phone_number" className="form-control wizard-required" placeholder="Masukkan Nomor Telepon" value={formData.responsible_person?.phone_number || ""} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">Alamat*</label>
+                                        <textarea name="responsible_person.address" className="form-control wizard-required" placeholder="Masukkan Alamat" value={formData.responsible_person?.address || ""} onChange={handleChange} rows="2"></textarea>
+                                    </div>
+                                    <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
+                                        <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
+                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
+                                        </button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            {/* Step 3: Insurance */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 2 ? "show" : ""}`}>
+                                <h6 className="text-md text-neutral-500">Informasi Asuransi</h6>
                                 <div className="row gy-3">
                                     {/* InsuranceType Fields */}
                                     <div className="col-12">
-                                        <label className="form-label">Insurance Name*</label>
-                                        <input type="text" name="insurance_type.name" className="form-control wizard-required" placeholder="Enter Insurance Name" required value={formData.insurance_type.name} onChange={handleChange} />
+                                        <label className="form-label">Nama Asuransi*</label>
+                                        <select name="insurance_type.name" className="form-control wizard-required" value={formData.insurance_type.name} onChange={handleInsuranceSelect}>
+                                            <option value="">Pilih Asuransi</option>
+                                            {Array.isArray(insuranceTypes) && insuranceTypes.map((item) => (
+                                                <option key={item.id} value={item.name}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="col-12">
-                                        <label className="form-label">Description</label>
-                                        <textarea name="insurance_type.description" className="form-control" placeholder="Enter Description" value={formData.insurance_type.description} onChange={handleChange} rows="3"></textarea>
+                                        <label className="form-label">Deskripsi</label>
+                                        <textarea name="insurance_type.description" className="form-control" placeholder="Masukkan Deskripsi" value={formData.insurance_type.description} onChange={handleChange} rows="3"></textarea>
                                     </div>
                                     <div className="col-12">
                                         <div className="form-check">
                                             <input className="form-check-input" type="checkbox" name="insurance_type.is_active" id="insuranceIsActive" checked={formData.insurance_type.is_active} onChange={handleChange} />
                                             <label className="form-check-label" htmlFor="insuranceIsActive">
-                                                Is Active
+                                                Aktif
                                             </label>
                                         </div>
                                     </div>
                                     <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
-                                        <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center"> {/* Added d-flex classes for icon */}
-                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Back
+                                        <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
+                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
                                         </button>
-                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Next</button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
                                     </div>
                                 </div>
                             </fieldset>
 
-                            {/* Step 3: On Visit */}
-                            <fieldset className={`wizard-fieldset ${currentStep === 2 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">On Visit Details</h6>
+                            {/* Step 4: On Visit */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 3 ? "show" : ""}`}>
+                                <h6 className="text-md text-neutral-500">Detail Kunjungan</h6>
                                 <div className="row gy-3">
                                     {/* VisitType Fields */}
                                     <div className="col-12">
-                                        <label className="form-label">Visit Type Name*</label>
-                                        <input type="text" name="visit_type.name" className="form-control wizard-required" placeholder="Enter Visit Type Name" required value={formData.visit_type.name} onChange={handleChange} />
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">Description*</label>
-                                        <textarea name="visit_type.description" className="form-control wizard-required" placeholder="Enter Description" required value={formData.visit_type.description} onChange={handleChange} rows="3"></textarea>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="form-check">
-                                            <input className="form-check-input" type="checkbox" name="visit_type.isActive" id="visitIsActive" checked={formData.visit_type.isActive} onChange={handleChange} />
-                                            <label className="form-check-label" htmlFor="visitIsActive">
-                                                Is Active
-                                            </label>
-                                        </div>
+                                        <label className="form-label">Jenis Kunjungan*</label>
+                                        <select name="visit_type.name" className="form-control wizard-required" value={formData.visit_type.name} onChange={handleVisitTypeSelect}>
+                                            <option value="">Pilih Jenis Kunjungan</option>
+                                            {Array.isArray(visitTypes) && visitTypes.map((item) => (
+                                                <option key={item.id} value={item.name}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
                                         <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
-                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Back
+                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
                                         </button>
-                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Next</button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
                                     </div>
                                 </div>
                             </fieldset>
 
-                            {/* Step 4: Treatment */}
-                            <fieldset className={`wizard-fieldset ${currentStep === 3 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">Treatment Details</h6>
+                            {/* Step 5: Treatment */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 4 ? "show" : ""}`}>
+                                <h6 className="text-md text-neutral-500">Detail Tindakan</h6>
                                 <div className="row gy-3">
                                     {/* TreatmentType Fields */}
                                     <div className="col-12">
-                                        <label className="form-label">Treatment Name*</label>
-                                        <input type="text" name="treatment_type.name" className="form-control wizard-required" placeholder="Enter Treatment Name" required value={formData.treatment_type.name} onChange={handleChange} />
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">Category*</label>
-                                        <input type="text" name="treatment_type.category" className="form-control wizard-required" placeholder="Enter Category" required value={formData.treatment_type.category} onChange={handleChange} />
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="form-check">
-                                            <input className="form-check-input" type="checkbox" name="treatment_type.is_active" id="treatmentIsActive" checked={formData.treatment_type.is_active} onChange={handleChange} />
-                                            <label className="form-check-label" htmlFor="treatmentIsActive">
-                                                Is Active
-                                            </label>
-                                        </div>
+                                        <label className="form-label">Nama Tindakan*</label>
+                                        <select name="treatment_type.name" className="form-control wizard-required" value={formData.treatment_type.name} onChange={handleTreatmentTypeSelect}>
+                                            <option value="">Pilih Tindakan</option>
+                                            {Array.isArray(treatmentTypes) && treatmentTypes.map((item) => (
+                                                <option key={item.id} value={item.name}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
                                         <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
-                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Back
+                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
                                         </button>
-                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Next</button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
                                     </div>
                                 </div>
                             </fieldset>
 
-                            {/* Step 5: Polyclinic */}
-                            <fieldset className={`wizard-fieldset ${currentStep === 4 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">Polyclinic & Doctor</h6>
+                            {/* Step 6: Polyclinic */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 5 ? "show" : ""}`}>
+                                <h6 className="text-md text-neutral-500">Poliklinik & Dokter</h6>
                                 <div className="row gy-3">
                                     {/* Patient Visit Schedule */}
                                     <div className="col-12">
-                                        <label className="form-label">Visit Schedule*</label>
-                                        <input type="datetime-local" name="schedule" className="form-control wizard-required" required value={formData.schedule} onChange={handleChange} />
+                                        <label className="form-label">Jadwal Kunjungan*</label>
+                                        <input type="datetime-local" name="schedule" className="form-control wizard-required" value={formData.schedule} onChange={handleChange} />
                                     </div>
                                     {/* Polyclinic Fields */}
                                     <div className="col-sm-6">
-                                        <label className="form-label">Polyclinic Name*</label>
-                                        <input type="text" name="polyclinic.name" className="form-control wizard-required" placeholder="Enter Polyclinic Name" required value={formData.polyclinic.name} onChange={handleChange} />
+                                        <label className="form-label">Nama Poliklinik*</label>
+                                        <select name="polyclinic.name" className="form-control wizard-required" value={formData.polyclinic.name} onChange={handlePolyclinicSelect}>
+                                            <option value="">Pilih Poliklinik</option>
+                                            {Array.isArray(polyclinics) && polyclinics.map((item) => (
+                                                <option key={item.id} value={item.name}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Floor*</label>
-                                        <input type="number" name="polyclinic.floor" className="form-control wizard-required" placeholder="Enter Floor Number" required value={formData.polyclinic.floor} onChange={handleChange} />
+                                        <label className="form-label">Lantai*</label>
+                                        <input type="number" name="polyclinic.floor" className="form-control wizard-required" placeholder="Masukkan Nomor Lantai" value={formData.polyclinic.floor} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Room Number*</label>
-                                        <input type="text" name="polyclinic.room_number" className="form-control wizard-required" placeholder="Enter Room Number" required value={formData.polyclinic.room_number} onChange={handleChange} />
+                                        <label className="form-label">Nomor Ruangan*</label>
+                                        <input type="text" name="polyclinic.room_number" className="form-control wizard-required" placeholder="Masukkan Nomor Ruangan" value={formData.polyclinic.room_number} onChange={handleChange} />
                                     </div>
                                     <div className="col-12">
                                         <div className="form-check">
                                             <input className="form-check-input" type="checkbox" name="polyclinic.is_active" id="polyclinicIsActive" checked={formData.polyclinic.is_active} onChange={handleChange} />
                                             <label className="form-check-label" htmlFor="polyclinicIsActive">
-                                                Is Active
+                                                Aktif
                                             </label>
                                         </div>
                                     </div>
 
                                     {/* Doctor Fields */}
                                     <div className="col-12">
-                                        <h6 className="text-md text-neutral-500 mt-4">Doctor Information</h6>
+                                        <h6 className="text-md text-neutral-500 mt-4">Informasi Dokter</h6>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Doctor Name*</label>
-                                        <input type="text" name="doctor.name" className="form-control wizard-required" placeholder="Enter Doctor Name" required value={formData.doctor.name} onChange={handleChange} />
+                                        <label className="form-label">Nama Dokter*</label>
+                                        <select name="doctor.name" className="form-control wizard-required" value={formData.doctor.name} onChange={handleDoctorSelect}>
+                                            <option value="">Pilih Dokter</option>
+                                            {Array.isArray(doctors) && doctors.map((item) => (
+                                                <option key={item.id} value={item.name}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Specialty*</label>
-                                        <input type="text" name="doctor.specialty" className="form-control wizard-required" placeholder="Enter Specialty" required value={formData.doctor.specialty} onChange={handleChange} />
+                                        <label className="form-label">Spesialisasi*</label>
+                                        <input type="text" name="doctor.specialty" className="form-control wizard-required" placeholder="Masukkan Spesialisasi" value={formData.doctor.specialty} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
-                                        <label className="form-label">Phone*</label>
-                                        <input type="text" name="doctor.phone" className="form-control wizard-required" placeholder="Enter Phone Number" required value={formData.doctor.phone} onChange={handleChange} />
+                                        <label className="form-label">Telepon*</label>
+                                        <input type="text" name="doctor.phone" className="form-control wizard-required" placeholder="Masukkan Nomor Telepon" value={formData.doctor.phone} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
                                         <label className="form-label">Email*</label>
-                                        <input type="email" name="doctor.email" className="form-control wizard-required" placeholder="Enter Email" required value={formData.doctor.email} onChange={handleChange} />
+                                        <input type="email" name="doctor.email" className="form-control wizard-required" placeholder="Masukkan Email" value={formData.doctor.email} onChange={handleChange} />
                                     </div>
                                     <div className="col-12">
                                         <div className="form-check">
                                             <input className="form-check-input" type="checkbox" name="doctor.is_active" id="doctorIsActive" checked={formData.doctor.is_active} onChange={handleChange} />
                                             <label className="form-check-label" htmlFor="doctorIsActive">
-                                                Is Active
+                                                Aktif
                                             </label>
                                         </div>
                                     </div>
 
                                     <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
                                         <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
-                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Back
+                                            <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
                                         </button>
-                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Next</button>
+                                        <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32">Berikutnya</button>
                                     </div>
                                 </div>
                             </fieldset>
 
-                            {/* Step 6: Completed */}
-                            <fieldset className={`wizard-fieldset ${currentStep === 5 ? "show" : ""}`}>
+                            {/* Step 7: Persetujuan (General Consent) */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 6 ? "show" : ""}`}>
+                                <h6 className="text-md text-neutral-500">Persetujuan Umum</h6>
+                                <div className="mb-3">
+                                    <p>
+                                        Dengan ini saya (<b>{formData.patient.identity.full_name || "-"}</b>) dan penanggung jawab (<b>{formData.responsible_person.full_name || "-"}</b>) menyatakan telah memahami dan menyetujui seluruh prosedur pelayanan medis yang akan dilakukan di fasilitas ini.
+                                    </p>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Tanda Tangan Persetujuan</label>
+                                    <div>
+                                        {!formData.signature && (
+                                            <button type="button" className="btn btn-outline-primary mb-2" onClick={() => setShowSignatureModal(true)}>
+                                                Tanda Tangan
+                                            </button>
+                                        )}
+                                        {formData.signature && (
+                                            <div className="mt-2">
+                                                <img src={formData.signature} alt="Tanda Tangan" style={{ width: 350, height: 150, objectFit: "contain" }} />
+                                                <div><span className="text-success">Tanda tangan sudah diisi</span></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <SignatureModal
+                                        show={showSignatureModal}
+                                        onClose={() => setShowSignatureModal(false)}
+                                        onSave={handleSignatureSave}
+                                        initialSignature={formData.signature}
+                                    />
+                                </div>
+                                <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
+                                    <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
+                                        <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
+                                    </button>
+                                    <button type="button" onClick={handleNext} className="form-wizard-next-btn btn btn-primary-600 px-32" disabled={!formData.signature}>Berikutnya</button>
+                                </div>
+                            </fieldset>
+
+                            {/* Step 8: Completed */}
+                            <fieldset className={`wizard-fieldset ${currentStep === 7 ? "show" : ""}`}>
                                 <div className="text-center mb-40">
                                     <img src="/assets/images/gif/success-img3.gif" alt="Success" className="gif-image mb-24" />
                                     <h6 className="text-md text-neutral-600">Congratulations </h6>
@@ -531,12 +829,14 @@ const CreatePatientVisit = () => {
                                 </div>
                                 <div className="form-group d-flex align-items-center justify-content-end gap-8">
                                     <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
-                                        <Icon icon="ic:round-arrow-back" className="icon me-2" /> Back
+                                        <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali
                                     </button>
                                     <button type="button" onClick={handleGeneratePdfClick} className="btn btn-info px-32">
                                         Generate PDF
                                     </button>
-                                    <button type="submit" className="form-wizard-submit btn btn-primary-600 px-32">Publish</button>
+                                    <button type="submit" className="form-wizard-submit btn btn-primary-600 px-32" disabled={isSubmitting}>
+                                        {isSubmitting ? "Submitting..." : "Publish"}
+                                    </button>
                                 </div>
                             </fieldset>
                         </form>

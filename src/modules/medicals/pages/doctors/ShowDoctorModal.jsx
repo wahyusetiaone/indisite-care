@@ -13,7 +13,7 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
     setLoading(true);
     fetchDoctorById(doctorId)
       .then((data) => setDoctor(data.data))
-      .catch(() => setError("Failed to fetch doctor data"))
+      .catch(() => setError("Gagal memuat data dokter"))
       .finally(() => setLoading(false));
   }, [doctorId]);
 
@@ -30,18 +30,18 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
       <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Doctor Details</h5>
+            <h5 className="modal-title">Detail Dokter</h5>
             <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
             {loading ? (
-              <div>Loading...</div>
+              <div>Memuat...</div>
             ) : error ? (
               <div className="text-danger">{error}</div>
             ) : doctor ? (
               <form className="row gy-3">
                 <div className="col-md-6">
-                  <label className="form-label">Name</label>
+                  <label className="form-label">Nama</label>
                   <input
                     type="text"
                     className="form-control"
@@ -50,7 +50,7 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label">Specialty</label>
+                  <label className="form-label">Spesialisasi</label>
                   <input
                     type="text"
                     className="form-control"
@@ -68,7 +68,7 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label">Phone</label>
+                  <label className="form-label">Telepon</label>
                   <input
                     type="text"
                     className="form-control"
@@ -87,9 +87,33 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                       id="isActiveCheckShow"
                     />
                     <label className="form-check-label" htmlFor="isActiveCheckShow">
-                      Is Active
+                      Aktif
                     </label>
                   </div>
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Ketersediaan</label>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={doctor.is_available}
+                      disabled
+                      id="isAvailableCheckShow"
+                    />
+                    <label className="form-check-label" htmlFor="isAvailableCheckShow">
+                      Tersedia
+                    </label>
+                  </div>
+                </div>
+                <div className="col-md-12">
+                  <label className="form-label">Deskripsi</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={doctor.description}
+                    disabled
+                  ></textarea>
                 </div>
               </form>
             ) : null}

@@ -79,7 +79,7 @@ export default function CreatePatient() {
     <div className="col-lg-12">
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title mb-0">Input Patient</h5>
+          <h5 className="card-title mb-0">Input Pasien</h5>
         </div>
         <div className="card-body">
           <form
@@ -88,130 +88,130 @@ export default function CreatePatient() {
             onSubmit={handleSubmit}
             ref={formRef}
           >
-            <h6>Identity</h6>
+            <h6>Identitas</h6>
             <div className="col-md-6">
-              <label className="form-label">Full Name</label>
+              <label className="form-label">Nama Lengkap</label>
               <div className="icon-field has-validation">
                 <span className="icon"><Icon icon="f7:person" /></span>
-                <input type="text" name="full_name" className="form-control" placeholder="Enter Full Name" value={form.identity.full_name} onChange={e => handleChange('identity', e)} required />
-                <div className="invalid-feedback">Please provide full name</div>
+                <input type="text" name="full_name" className="form-control" placeholder="Masukkan Nama Lengkap" value={form.identity.full_name} onChange={e => handleChange('identity', e)} required />
+                <div className="invalid-feedback">Silakan masukkan nama lengkap</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Phone Number</label>
+              <label className="form-label">Nomor Telepon</label>
               <div className="icon-field has-validation">
                 <span className="icon"><Icon icon="solar:phone-calling-linear" /></span>
-                <input type="text" name="phone_number" className="form-control" placeholder="Enter Phone Number" value={form.identity.phone_number} onChange={e => handleChange('identity', e)} required />
-                <div className="invalid-feedback">Please provide phone number</div>
+                <input type="text" name="phone_number" className="form-control" placeholder="Masukkan Nomor Telepon" value={form.identity.phone_number} onChange={e => handleChange('identity', e)} required />
+                <div className="invalid-feedback">Silakan masukkan nomor telepon</div>
               </div>
             </div>
             <div className="col-md-6">
               <label className="form-label">Email</label>
               <div className="icon-field has-validation">
                 <span className="icon"><Icon icon="mage:email" /></span>
-                <input type="email" name="email" className="form-control" placeholder="Enter Email" value={form.identity.email} onChange={e => handleChange('identity', e)} required />
-                <div className="invalid-feedback">Please provide email</div>
+                <input type="email" name="email" className="form-control" placeholder="Masukkan Email" value={form.identity.email} onChange={e => handleChange('identity', e)} required />
+                <div className="invalid-feedback">Silakan masukkan email</div>
               </div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Gender</label>
-              <input type="text" name="gender" className="form-control" placeholder="Gender" value={form.identity.gender} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide gender</div>
+              <label className="form-label">Jenis Kelamin</label>
+              <input type="text" name="gender" className="form-control" placeholder="Jenis Kelamin" value={form.identity.gender} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan jenis kelamin</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Blood Type</label>
-              <input type="text" name="blood_type" className="form-control" placeholder="Blood Type" value={form.identity.blood_type} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide blood type</div>
+              <label className="form-label">Golongan Darah</label>
+              <input type="text" name="blood_type" className="form-control" placeholder="Golongan Darah" value={form.identity.blood_type} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan golongan darah</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Born</label>
-              <input type="text" name="born" className="form-control" placeholder="Born" value={form.identity.born} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide born</div>
+              <label className="form-label">Tempat Lahir</label>
+              <input type="text" name="born" className="form-control" placeholder="Tempat Lahir" value={form.identity.born} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan tempat lahir</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Date of Birth</label>
+              <label className="form-label">Tanggal Lahir</label>
               <input type="date" name="date_of_birth" className="form-control" value={form.identity.date_of_birth} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide date of birth</div>
+              <div className="invalid-feedback">Silakan masukkan tanggal lahir</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Identity Type</label>
-              <input type="text" name="identity_type" className="form-control" placeholder="Identity Type" value={form.identity.identity_type} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide identity type</div>
+              <label className="form-label">Tipe Identitas</label>
+              <input type="text" name="identity_type" className="form-control" placeholder="Tipe Identitas" value={form.identity.identity_type} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan tipe identitas</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Identity Number</label>
-              <input type="text" name="identity_number" className="form-control" placeholder="Identity Number" value={form.identity.identity_number} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide identity number</div>
+              <label className="form-label">Nomor Identitas</label>
+              <input type="text" name="identity_number" className="form-control" placeholder="Nomor Identitas" value={form.identity.identity_number} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan nomor identitas</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Name of Mother</label>
-              <input type="text" name="name_of_mother" className="form-control" placeholder="Name of Mother" value={form.identity.name_of_mother} onChange={e => handleChange('identity', e)} required />
-              <div className="invalid-feedback">Please provide name of mother</div>
+              <label className="form-label">Nama Ibu</label>
+              <input type="text" name="name_of_mother" className="form-control" placeholder="Nama Ibu" value={form.identity.name_of_mother} onChange={e => handleChange('identity', e)} required />
+              <div className="invalid-feedback">Silakan masukkan nama ibu</div>
             </div>
-            <h6>Address</h6>
+            <h6>Alamat</h6>
             <div className="col-md-6">
-              <label className="form-label">Full Address</label>
-              <input type="text" name="full_address" className="form-control" placeholder="Full Address" value={form.address.full_address} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide full address</div>
+              <label className="form-label">Alamat Lengkap</label>
+              <input type="text" name="full_address" className="form-control" placeholder="Alamat Lengkap" value={form.address.full_address} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan alamat lengkap</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Province</label>
-              <input type="text" name="provincy" className="form-control" placeholder="Province" value={form.address.provincy} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide province</div>
+              <label className="form-label">Provinsi</label>
+              <input type="text" name="provincy" className="form-control" placeholder="Provinsi" value={form.address.provincy} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan provinsi</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">City</label>
-              <input type="text" name="city" className="form-control" placeholder="City" value={form.address.city} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide city</div>
+              <label className="form-label">Kota</label>
+              <input type="text" name="city" className="form-control" placeholder="Kota" value={form.address.city} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan kota</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">District</label>
-              <input type="text" name="district" className="form-control" placeholder="District" value={form.address.district} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide district</div>
+              <label className="form-label">Kecamatan</label>
+              <input type="text" name="district" className="form-control" placeholder="Kecamatan" value={form.address.district} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan kecamatan</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Village</label>
-              <input type="text" name="village" className="form-control" placeholder="Village" value={form.address.village} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide village</div>
+              <label className="form-label">Desa</label>
+              <input type="text" name="village" className="form-control" placeholder="Desa" value={form.address.village} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan desa</div>
             </div>
             <div className="col-md-3">
               <label className="form-label">RT/RW</label>
               <input type="text" name="rt_rw" className="form-control" placeholder="RT/RW" value={form.address.rt_rw} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide RT/RW</div>
+              <div className="invalid-feedback">Silakan masukkan RT/RW</div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Post Code</label>
-              <input type="text" name="post_code" className="form-control" placeholder="Post Code" value={form.address.post_code} onChange={e => handleChange('address', e)} required />
-              <div className="invalid-feedback">Please provide post code</div>
+              <label className="form-label">Kode Pos</label>
+              <input type="text" name="post_code" className="form-control" placeholder="Kode Pos" value={form.address.post_code} onChange={e => handleChange('address', e)} required />
+              <div className="invalid-feedback">Silakan masukkan kode pos</div>
             </div>
-            <h6>Social</h6>
+            <h6>Sosial</h6>
             <div className="col-md-4">
-              <label className="form-label">Religion</label>
-              <input type="text" name="religion" className="form-control" placeholder="Religion" value={form.social.religion} onChange={e => handleChange('social', e)} required />
-              <div className="invalid-feedback">Please provide religion</div>
-            </div>
-            <div className="col-md-4">
-              <label className="form-label">Marriage Status</label>
-              <input type="text" name="marriage_status" className="form-control" placeholder="Marriage Status" value={form.social.marriage_status} onChange={e => handleChange('social', e)} />
+              <label className="form-label">Agama</label>
+              <input type="text" name="religion" className="form-control" placeholder="Agama" value={form.social.religion} onChange={e => handleChange('social', e)} required />
+              <div className="invalid-feedback">Silakan masukkan agama</div>
             </div>
             <div className="col-md-4">
-              <label className="form-label">Education Status</label>
-              <input type="text" name="education_status" className="form-control" placeholder="Education Status" value={form.social.education_status} onChange={e => handleChange('social', e)} />
+              <label className="form-label">Status Pernikahan</label>
+              <input type="text" name="marriage_status" className="form-control" placeholder="Status Pernikahan" value={form.social.marriage_status} onChange={e => handleChange('social', e)} />
             </div>
             <div className="col-md-4">
-              <label className="form-label">Work</label>
-              <input type="text" name="work" className="form-control" placeholder="Work" value={form.social.work} onChange={e => handleChange('social', e)} required />
-              <div className="invalid-feedback">Please provide work</div>
+              <label className="form-label">Status Pendidikan</label>
+              <input type="text" name="education_status" className="form-control" placeholder="Status Pendidikan" value={form.social.education_status} onChange={e => handleChange('social', e)} />
             </div>
             <div className="col-md-4">
-              <label className="form-label">Language</label>
-              <input type="text" name="language" className="form-control" placeholder="Language" value={form.social.language} onChange={e => handleChange('social', e)} />
+              <label className="form-label">Pekerjaan</label>
+              <input type="text" name="work" className="form-control" placeholder="Pekerjaan" value={form.social.work} onChange={e => handleChange('social', e)} required />
+              <div className="invalid-feedback">Silakan masukkan pekerjaan</div>
+            </div>
+            <div className="col-md-4">
+              <label className="form-label">Bahasa</label>
+              <input type="text" name="language" className="form-control" placeholder="Bahasa" value={form.social.language} onChange={e => handleChange('social', e)} />
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit form"}
+                {loading ? "Mengirim..." : "Kirim Formulir"}
               </button>
-              {success && <div className="alert alert-success mt-2">Patient created successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Pasien berhasil dibuat!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>

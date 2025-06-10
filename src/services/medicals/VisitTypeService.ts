@@ -39,3 +39,9 @@ export const deleteVisitType = async (id: string) => {
   const response = await axiosWithAuth.delete(`/visit-types/${id}`);
   return response.data;
 };
+
+export const fetchAllDataVisitTypes = async (searchQuery: string | null = null) => {
+  const params = searchQuery ? { searchQuery: searchQuery } : {};
+  const response = await axiosWithAuth.get("/visit-types-all", { params });
+  return response.data;
+};

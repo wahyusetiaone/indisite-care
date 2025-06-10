@@ -38,7 +38,7 @@ export default function EditDoctor() {
             is_active: data.is_active ?? true,
           });
         })
-        .catch((err) => setError("Failed to fetch doctor data"))
+        .catch((err) => setError("Gagal mengambil data dokter"))
         .finally(() => setLoading(false) );
     }
   }, [doctorId]);
@@ -66,7 +66,7 @@ export default function EditDoctor() {
       setSuccess(true);
       setTimeout(() => router.push("/page/clinic/doctors"), 1000);
     } catch (err) {
-      setError(err?.message || "Failed to update doctor");
+      setError(err?.message || "Gagal memperbarui dokter");
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export default function EditDoctor() {
     <div className="col-lg-12">
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title mb-0">Edit Doctor</h5>
+          <h5 className="card-title mb-0">Edit Dokter</h5>
         </div>
         <div className="card-body">
           <form
@@ -86,7 +86,7 @@ export default function EditDoctor() {
             ref={formRef}
           >
             <div className="col-md-6">
-              <label className="form-label">Name</label>
+              <label className="form-label">Nama</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="f7:person" />
@@ -95,16 +95,16 @@ export default function EditDoctor() {
                   type="text"
                   name="name"
                   className="form-control"
-                  placeholder="Enter Name"
+                  placeholder="Masukkan Nama"
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide name</div>
+                <div className="invalid-feedback">Silakan masukkan nama</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Specialty</label>
+              <label className="form-label">Spesialisasi</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="f7:person" />
@@ -113,12 +113,12 @@ export default function EditDoctor() {
                   type="text"
                   name="specialty"
                   className="form-control"
-                  placeholder="Enter Specialty"
+                  placeholder="Masukkan Spesialisasi"
                   value={form.specialty}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide specialty</div>
+                <div className="invalid-feedback">Silakan masukkan spesialisasi</div>
               </div>
             </div>
             <div className="col-md-6">
@@ -131,16 +131,16 @@ export default function EditDoctor() {
                   type="email"
                   name="email"
                   className="form-control"
-                  placeholder="Enter Email"
+                  placeholder="Masukkan Email"
                   value={form.email}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide email address</div>
+                <div className="invalid-feedback">Silakan masukkan alamat email</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Phone</label>
+              <label className="form-label">Telepon</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="solar:phone-calling-linear" />
@@ -149,16 +149,16 @@ export default function EditDoctor() {
                   type="text"
                   name="phone"
                   className="form-control"
-                  placeholder="Enter Phone"
+                  placeholder="Masukkan Nomor Telepon"
                   value={form.phone}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide phone number</div>
+                <div className="invalid-feedback">Silakan masukkan nomor telepon</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Active</label>
+              <label className="form-label">Aktif</label>
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -169,15 +169,15 @@ export default function EditDoctor() {
                   id="isActiveCheck"
                 />
                 <label className="form-check-label" htmlFor="isActiveCheck">
-                  Is Active
+                  Aktif
                 </label>
               </div>
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Updating..." : "Update Doctor"}
+                {loading ? "Memperbarui..." : "Perbarui Dokter"}
               </button>
-              {success && <div className="alert alert-success mt-2">Doctor updated successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Dokter berhasil diperbarui!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>
@@ -186,4 +186,3 @@ export default function EditDoctor() {
     </div>
   );
 }
-

@@ -41,7 +41,7 @@ export default function CreateTreatmentType() {
       setForm(initialForm);
       setValidated(false);
     } catch (err) {
-      setError(err?.message || "Failed to create treatment type");
+      setError(err?.message || "Gagal membuat jenis perawatan");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function CreateTreatmentType() {
     <div className="col-lg-12">
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title mb-0">Input Treatment Type</h5>
+          <h5 className="card-title mb-0">Input Jenis Perawatan</h5>
         </div>
         <div className="card-body">
           <form
@@ -61,7 +61,7 @@ export default function CreateTreatmentType() {
             ref={formRef}
           >
             <div className="col-md-6">
-              <label className="form-label">Name</label>
+              <label className="form-label">Nama</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:medical-bag" />
@@ -70,16 +70,16 @@ export default function CreateTreatmentType() {
                   type="text"
                   name="name"
                   className="form-control"
-                  placeholder="Enter Name"
+                  placeholder="Masukkan Nama"
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide name</div>
+                <div className="invalid-feedback">Silakan masukkan nama</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Category</label>
+              <label className="form-label">Kategori</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:format-list-bulleted-type" />
@@ -88,16 +88,16 @@ export default function CreateTreatmentType() {
                   type="text"
                   name="category"
                   className="form-control"
-                  placeholder="Enter Category"
+                  placeholder="Masukkan Kategori"
                   value={form.category}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide category</div>
+                <div className="invalid-feedback">Silakan masukkan kategori</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Active</label>
+              <label className="form-label">Aktif</label>
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -108,15 +108,15 @@ export default function CreateTreatmentType() {
                   id="isActiveCheck"
                 />
                 <label className="form-check-label" htmlFor="isActiveCheck">
-                  Is Active
+                  Aktif
                 </label>
               </div>
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit form"}
+                {loading ? "Mengirim..." : "Kirim Formulir"}
               </button>
-              {success && <div className="alert alert-success mt-2">Treatment type created successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Jenis perawatan berhasil dibuat!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>
@@ -125,4 +125,3 @@ export default function CreateTreatmentType() {
     </div>
   );
 }
-

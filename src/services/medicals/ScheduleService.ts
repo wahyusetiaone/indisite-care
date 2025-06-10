@@ -50,3 +50,9 @@ export const deleteSchedule = async (id: string) => {
   const response = await axiosWithAuth.delete(`/schedules/${id}`);
   return response.data;
 };
+
+export const fetchAllDataSchedules = async (searchQuery: string | null = null) => {
+  const params = searchQuery ? { searchQuery: searchQuery } : {};
+  const response = await axiosWithAuth.get("/schedules-all", { params });
+  return response.data;
+};

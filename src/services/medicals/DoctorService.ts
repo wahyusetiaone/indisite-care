@@ -31,3 +31,9 @@ export const deleteDoctor = async (id: number) => {
     const response = await axiosWithAuth.delete(`/doctors/${id}`);
     return response.data;
 };
+
+export const fetchAllDataDoctors = async (searchQuery: string | null = null) => {
+    const params = searchQuery ? { searchQuery: searchQuery } : {};
+    const response = await axiosWithAuth.get("/doctors-all", { params });
+    return response.data;
+};

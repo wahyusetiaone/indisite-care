@@ -51,7 +51,7 @@ export default function CreateInsuranceType() {
     <div className="col-lg-12">
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title mb-0">Input Insurance Type</h5>
+          <h5 className="card-title mb-0">Input Jenis Asuransi</h5>
         </div>
         <div className="card-body">
           <form
@@ -61,7 +61,7 @@ export default function CreateInsuranceType() {
             ref={formRef}
           >
             <div className="col-md-6">
-              <label className="form-label">Name</label>
+              <label className="form-label">Nama</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:card-account-details" />
@@ -70,16 +70,16 @@ export default function CreateInsuranceType() {
                   type="text"
                   name="name"
                   className="form-control"
-                  placeholder="Enter Name"
+                  placeholder="Masukkan Nama"
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide name</div>
+                <div className="invalid-feedback">Silakan masukkan nama</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Description</label>
+              <label className="form-label">Deskripsi</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:text" />
@@ -88,15 +88,15 @@ export default function CreateInsuranceType() {
                   type="text"
                   name="description"
                   className="form-control"
-                  placeholder="Enter Description"
+                  placeholder="Masukkan Deskripsi"
                   value={form.description}
                   onChange={handleChange}
                 />
-                <div className="invalid-feedback">Please provide description</div>
+                <div className="invalid-feedback">Silakan masukkan deskripsi</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Active</label>
+              <label className="form-label">Aktif</label>
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -107,15 +107,15 @@ export default function CreateInsuranceType() {
                   id="isActiveCheck"
                 />
                 <label className="form-check-label" htmlFor="isActiveCheck">
-                  Is Active
+                  Aktif
                 </label>
               </div>
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit form"}
+                {loading ? "Mengirim..." : "Kirim Formulir"}
               </button>
-              {success && <div className="alert alert-success mt-2">Insurance type created successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Jenis asuransi berhasil dibuat!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>
@@ -124,4 +124,3 @@ export default function CreateInsuranceType() {
     </div>
   );
 }
-

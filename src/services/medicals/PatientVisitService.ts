@@ -31,3 +31,9 @@ export const deletePatientVisit = async (id: number) => {
     const response = await axiosWithAuth.delete(`/patient-visits/${id}`);
     return response.data;
 };
+
+export const fetchAllDataPatientVisits = async (searchQuery: string | null = null) => {
+    const params = searchQuery ? { searchQuery: searchQuery } : {};
+    const response = await axiosWithAuth.get("/patient-visits-all", { params });
+    return response.data;
+};

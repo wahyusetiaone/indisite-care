@@ -53,7 +53,7 @@ export default function CreatePolyclinic() {
     <div className="col-lg-12">
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title mb-0">Input Polyclinic</h5>
+          <h5 className="card-title mb-0">Input Poliklinik</h5>
         </div>
         <div className="card-body">
           <form
@@ -63,7 +63,7 @@ export default function CreatePolyclinic() {
             ref={formRef}
           >
             <div className="col-md-6">
-              <label className="form-label">Name</label>
+              <label className="form-label">Nama</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:hospital-building" />
@@ -72,16 +72,16 @@ export default function CreatePolyclinic() {
                   type="text"
                   name="name"
                   className="form-control"
-                  placeholder="Enter Name"
+                  placeholder="Masukkan Nama"
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide name</div>
+                <div className="invalid-feedback">Silakan masukkan nama</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Floor</label>
+              <label className="form-label">Lantai</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:stairs" />
@@ -90,16 +90,16 @@ export default function CreatePolyclinic() {
                   type="number"
                   name="floor"
                   className="form-control"
-                  placeholder="Enter Floor"
+                  placeholder="Masukkan Lantai"
                   value={form.floor}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide floor</div>
+                <div className="invalid-feedback">Silakan masukkan lantai</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Room Number</label>
+              <label className="form-label">Nomor Ruangan</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="mdi:door" />
@@ -108,16 +108,16 @@ export default function CreatePolyclinic() {
                   type="text"
                   name="room_number"
                   className="form-control"
-                  placeholder="Enter Room Number"
+                  placeholder="Masukkan Nomor Ruangan"
                   value={form.room_number}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide room number</div>
+                <div className="invalid-feedback">Silakan masukkan nomor ruangan</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Active</label>
+              <label className="form-label">Aktif</label>
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -128,15 +128,15 @@ export default function CreatePolyclinic() {
                   id="isActiveCheck"
                 />
                 <label className="form-check-label" htmlFor="isActiveCheck">
-                  Is Active
+                  Aktif
                 </label>
               </div>
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit form"}
+                {loading ? "Mengirim..." : "Kirim Formulir"}
               </button>
-              {success && <div className="alert alert-success mt-2">Polyclinic created successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Poliklinik berhasil dibuat!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>
@@ -145,4 +145,3 @@ export default function CreatePolyclinic() {
     </div>
   );
 }
-

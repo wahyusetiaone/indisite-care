@@ -60,7 +60,7 @@ export default function CreateDoctor() {
                 style={{ textDecoration: 'none' }}
             >
                 <Icon icon="ic:round-arrow-back" className="icon me-2" style={{ fontSize: '1.5rem' }} />
-                <h4 className="card-title mb-0">Create Doctor</h4>
+                <h4 className="card-title mb-0">Buat Dokter</h4>
             </Link>
         </div>
         <div className="card-body">
@@ -73,7 +73,7 @@ export default function CreateDoctor() {
             ref={formRef}
           >
             <div className="col-md-6">
-              <label className="form-label">Name</label>
+              <label className="form-label">Nama</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="f7:person" />
@@ -82,16 +82,16 @@ export default function CreateDoctor() {
                   type="text"
                   name="name"
                   className="form-control"
-                  placeholder="Enter Name"
+                  placeholder="Masukkan Nama"
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide name</div>
+                <div className="invalid-feedback">Silakan masukkan nama</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Specialty</label>
+              <label className="form-label">Spesialisasi</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="f7:person" />
@@ -100,12 +100,12 @@ export default function CreateDoctor() {
                   type="text"
                   name="specialty"
                   className="form-control"
-                  placeholder="Enter Specialty"
+                  placeholder="Masukkan Spesialisasi"
                   value={form.specialty}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide specialty</div>
+                <div className="invalid-feedback">Silakan masukkan spesialisasi</div>
               </div>
             </div>
             <div className="col-md-6">
@@ -118,16 +118,16 @@ export default function CreateDoctor() {
                   type="email"
                   name="email"
                   className="form-control"
-                  placeholder="Enter Email"
+                  placeholder="Masukkan Email"
                   value={form.email}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide email address</div>
+                <div className="invalid-feedback">Silakan masukkan alamat email</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Phone</label>
+              <label className="form-label">Telepon</label>
               <div className="icon-field has-validation">
                 <span className="icon">
                   <Icon icon="solar:phone-calling-linear" />
@@ -136,16 +136,16 @@ export default function CreateDoctor() {
                   type="text"
                   name="phone"
                   className="form-control"
-                  placeholder="Enter Phone"
+                  placeholder="Masukkan Nomor Telepon"
                   value={form.phone}
                   onChange={handleChange}
                   required
                 />
-                <div className="invalid-feedback">Please provide phone number</div>
+                <div className="invalid-feedback">Silakan masukkan nomor telepon</div>
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Active</label>
+              <label className="form-label">Aktif</label>
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -156,15 +156,15 @@ export default function CreateDoctor() {
                   id="isActiveCheck"
                 />
                 <label className="form-check-label" htmlFor="isActiveCheck">
-                  Is Active
+                  Aktif
                 </label>
               </div>
             </div>
             <div className="col-md-12">
               <button className="btn btn-primary-600" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit form"}
+                {loading ? "Mengirim..." : "Kirim Formulir"}
               </button>
-              {success && <div className="alert alert-success mt-2">Doctor created successfully!</div>}
+              {success && <div className="alert alert-success mt-2">Dokter berhasil dibuat!</div>}
               {error && <div className="alert alert-danger mt-2">{error}</div>}
             </div>
           </form>

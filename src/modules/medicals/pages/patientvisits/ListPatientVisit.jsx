@@ -2,8 +2,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { fetchAllPatientVisits } from "@/services/medicals/PatientVisitService";
+import { fetchAllPatientVisits, deletePatientVisit } from "@/services/medicals/PatientVisitService";
 import { useLoaderTablePagination } from "@/helper/loaderTablePagination";
+import ShowPatientVisitModal from "./ShowPatientVisitModal";
+import { useConfirmDialog } from "@/components/ConfirmDialog";
+import { showSuccess, showError } from "@/../contexts/toast";
 
 const ListPatientVisit = () => {
     const {
@@ -26,10 +29,24 @@ const ListPatientVisit = () => {
     });
 
     const [searchQuery, setSearchQuery] = useState("");
+    const [showModal, setShowModal] = useState(null);
+    const { show: showConfirm } = useConfirmDialog();
 
     const onSearchSubmit = (e) => {
         e.preventDefault();
         handleSearch(searchQuery);
+    };
+
+    const handleDelete = async (id) => {
+        showConfirm("Are you sure to delete this data?", async () => {
+            try {
+                await deletePatientVisit(id);
+                fetchData();
+                showSuccess("Patient visit deleted successfully");
+            } catch (err) {
+                showError("Failed to delete patient visit");
+            }
+        });
     };
 
     return (
@@ -104,15 +121,29 @@ const ListPatientVisit = () => {
                                                     </span>
                                                 </td>
                                                 <td className="text-center">
-                                                    <button className="btn btn-sm btn-info me-1" title="View">
-                                                        <Icon icon="mdi:eye-outline" />
-                                                    </button>
-                                                    <button className="btn btn-sm btn-warning me-1" title="Edit">
-                                                        <Icon icon="mdi:pencil-outline" />
-                                                    </button>
-                                                    <button className="btn btn-sm btn-danger" title="Delete">
-                                                        <Icon icon="mdi:delete-outline" />
-                                                    </button>
+                                                    <Link
+                                                        href="#"
+                                                        className="w-32-px h-32-px me-8 bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        title="View"
+                                                        onClick={() => setShowModal(visit.id)}
+                                                    >
+                                                        <Icon icon="iconamoon:eye-light" />
+                                                    </Link>
+                                                    <Link
+                                                        className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        href={`/page/clinic/patientvisits/${visit.id}`}
+                                                        title="Edit"
+                                                    >
+                                                        <Icon icon="lucide:edit" />
+                                                    </Link>
+                                                    <Link
+                                                        href="#"
+                                                        className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                        title="Delete"
+                                                        onClick={() => handleDelete(visit.id)}
+                                                    >
+                                                        <Icon icon="mingcute:delete-2-line" />
+                                                    </Link>
                                                 </td>
                                             </tr>
                                         ))
@@ -126,19 +157,36 @@ const ListPatientVisit = () => {
                         )}
                     </div>
                 </div>
-                <div className="card-footer d-flex justify-content-between align-items-center">
-                    <div>
-                        Page {pagination?.page} of {pagination?.totalPages || 1}
-                    </div>
-                    <div>
-                        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => goToPage(pagination.page - 1)} disabled={pagination.page === 1}>
-                            Previous
-                        </button>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={() => goToPage(pagination.page + 1)} disabled={pagination.page === pagination.totalPages}>
-                            Next
-                        </button>
+                <div className="card-footer">
+                    <div className="text-center">
+                        <ul className='pagination d-flex flex-wrap align-items-center gap-2 justify-content-center mt-24'>
+                            <li className='page-item'>
+                                <button
+                                    disabled={pagination.page === 1}
+                                    className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
+                                    onClick={() => goToPage(pagination.page - 1)}
+                                >
+                                    Previous
+                                </button>
+                            </li>
+                            <span>
+                                Page {pagination.page} of {pagination.totalPages || 1}
+                            </span>
+                            <li className='page-item'>
+                                <button
+                                    disabled={pagination.page >= pagination.totalPages}
+                                    className='page-link bg-base border text-secondary-light fw-medium radius-8 border-0  py-10 d-flex align-items-center justify-content-center h-48-px'
+                                    onClick={() => goToPage(pagination.page + 1)}
+                                >
+                                    Next
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+                {showModal && (
+                    <ShowPatientVisitModal id={showModal} onClose={() => setShowModal(null)} />
+                )}
             </div>
         </div>
     );
