@@ -9,6 +9,10 @@ interface PaginationResponse<T> {
         totalPages: number,
         perPage: number,
         totalData: number,
+        data?: {} | null,
+        current_page?: number | null,
+        total?: number | null,
+        per_page?: number | null,
     }; 
     errors: [];
     message: string; 
@@ -81,6 +85,7 @@ export const useLoaderTablePagination = <T>({
                 if (Array.isArray(fallback) && fallback.length > 0) {
                     // Bungkus fallback dalam objek baru dengan key 'content'
                     const dataObj = { content: fallback };
+                    // @ts-ignore
                     finalData = dataObj;
                 } else {
                     finalData = []; // fallback juga kosong

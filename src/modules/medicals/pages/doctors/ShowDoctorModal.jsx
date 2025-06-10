@@ -41,6 +41,24 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
             ) : doctor ? (
               <form className="row gy-3">
                 <div className="col-md-6">
+                  <label className="form-label">NIK</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={doctor.nik}
+                    disabled
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">ID Satu Sehat</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={doctor.satu_sehat_id}
+                    disabled
+                  />
+                </div>
+                <div className="col-md-6">
                   <label className="form-label">Nama</label>
                   <input
                     type="text"
@@ -59,11 +77,20 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label">Email</label>
+                  <label className="form-label">Alamat</label>
                   <input
-                    type="email"
+                    type="text"
                     className="form-control"
-                    value={doctor.email}
+                    value={doctor.address}
+                    disabled
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Kota</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={doctor.city}
                     disabled
                   />
                 </div>
@@ -77,7 +104,25 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label">Status</label>
+                  <label className="form-label">Nomor STR</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={doctor.str_number}
+                    disabled
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Tanggal Mulai</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={doctor.start_date}
+                    disabled
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Aktif</label>
                   <div className="form-check">
                     <input
                       className="form-check-input"
@@ -90,30 +135,6 @@ export default function ShowDoctorModal({ doctorId, onClose }) {
                       Aktif
                     </label>
                   </div>
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Ketersediaan</label>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={doctor.is_available}
-                      disabled
-                      id="isAvailableCheckShow"
-                    />
-                    <label className="form-check-label" htmlFor="isAvailableCheckShow">
-                      Tersedia
-                    </label>
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <label className="form-label">Deskripsi</label>
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    value={doctor.description}
-                    disabled
-                  ></textarea>
                 </div>
               </form>
             ) : null}

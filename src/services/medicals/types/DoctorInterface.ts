@@ -1,9 +1,14 @@
 export interface Doctor {
     id: number;
+    nik: string;
+    satu_sehat_id: string;
     name: string;
     specialty: string;
+    address: string;
+    city: string;
     phone: string;
-    email: string;
+    str_number: string;
+    start_date: string;
     is_active: boolean;
 }
 
@@ -13,6 +18,7 @@ export interface FetchAllDoctorsParams {
     name?: string;
     specialty?: string;
     is_active?: boolean;
+    city?: string;
 }
 
 export interface FetchAllDoctorsResponse {
@@ -32,10 +38,15 @@ export interface FetchAllDoctorsResponse {
 }
 
 export type CreateDoctorDto = {
+    nik: string;
+    satu_sehat_id: string;
     name: string;
     specialty: string;
+    address: string;
+    city: string;
     phone: string;
-    email: string;
+    str_number: string;
+    start_date: string;
     is_active: boolean;
 };
 

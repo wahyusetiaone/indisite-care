@@ -1,11 +1,10 @@
 import Breadcrumb from "@/components/Breadcrumb";
 import MasterLayout from "@/masterLayout/MasterLayout";
-import ListRole from "@/modules/cores/pages/roles/ListRole";
+import ListInitialAssesment from "@/modules/medicals/pages/initialassesments/ListInitialAssesment";
 
 export const metadata = {
     title: "Indisite Care",
-    description:
-        "Roles",
+    description: "Initial Assesment",
 };
 
 const Page = () => {
@@ -14,13 +13,14 @@ const Page = () => {
             {/* MasterLayout */}
             <MasterLayout>
                 {/* Breadcrumb */}
-                <Breadcrumb title='Roles' />
+                <Breadcrumb title='Doctor' />
 
-                {/* ListRole */}
-                <ListRole/>
+                {/* ListInitialAssesment */}
+                <ListInitialAssesment/>
             </MasterLayout>
         </>
     );
 };
 
 export default Page;
+

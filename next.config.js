@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ['*.yuka.biz.id'],
   reactStrictMode: false,
   async rewrites() {
     return [
@@ -16,7 +17,7 @@ const nextConfig = {
       {
         source: '/medical-api/:path*',
         destination: 'http://medical-record-master-41yebw.laravel.cloud/api/:path*', // Proxy ke backend
-        // destination: 'http://192.168.0.15:8000/api/:path*', // Proxy ke backend
+        // destination: 'http://localhost:8000/api/:path*', // Proxy ke backend
       },
     ];
   },

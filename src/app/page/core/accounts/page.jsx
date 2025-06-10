@@ -1,5 +1,4 @@
 import Breadcrumb from "@/components/Breadcrumb";
-import TableBasicLayer from "@/components/TableBasicLayer";
 import MasterLayout from "@/masterLayout/MasterLayout";
 import ListAccount from "@/modules/cores/pages/accounts/ListAccount";
 

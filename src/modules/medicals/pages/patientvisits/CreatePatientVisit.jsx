@@ -19,6 +19,7 @@ import { showSuccess, showError } from "@/../contexts/toast";
 import { Modal, Button } from "react-bootstrap";
 import PatientModal from "./PatientModal";
 import SignatureModal from "@/components/SignatureModal";
+import GeneralConsentSection from "../../components/GeneralConsentSection";
 
 const CreatePatientVisit = () => {
     // State to manage the current step of the form wizard (0-6)
@@ -381,19 +382,19 @@ const CreatePatientVisit = () => {
                                         <div className="form-wizard-list__line">
                                             <span className="count">3</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Asuransi</span>
+                                        <span className="text text-xs fw-semibold">Pembiayaan</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 3 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">4</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Kunjungan</span>
+                                        <span className="text text-xs fw-semibold">Jenis Kunjungan</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 4 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
                                             <span className="count">5</span>
                                         </div>
-                                        <span className="text text-xs fw-semibold">Tindakan</span>
+                                        <span className="text text-xs fw-semibold">Jenis Perawatan</span>
                                     </li>
                                     <li className={`form-wizard-list__item ${currentStep >= 5 ? "active" : ""}`}>
                                         <div className="form-wizard-list__line">
@@ -757,6 +758,30 @@ const CreatePatientVisit = () => {
                                         <input type="text" name="doctor.specialty" className="form-control wizard-required" placeholder="Masukkan Spesialisasi" value={formData.doctor.specialty} onChange={handleChange} />
                                     </div>
                                     <div className="col-sm-6">
+                                        <label className="form-label">NIK*</label>
+                                        <input type="text" name="doctor.nik" className="form-control wizard-required" placeholder="Masukkan NIK" value={formData.doctor.nik || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Satu Sehat ID*</label>
+                                        <input type="text" name="doctor.satu_sehat_id" className="form-control wizard-required" placeholder="Masukkan Satu Sehat ID" value={formData.doctor.satu_sehat_id || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Alamat*</label>
+                                        <input type="text" name="doctor.address" className="form-control wizard-required" placeholder="Masukkan Alamat" value={formData.doctor.address || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Kota*</label>
+                                        <input type="text" name="doctor.city" className="form-control wizard-required" placeholder="Masukkan Kota" value={formData.doctor.city || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Nomor STR*</label>
+                                        <input type="text" name="doctor.str_number" className="form-control wizard-required" placeholder="Masukkan Nomor STR" value={formData.doctor.str_number || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">Tanggal Mulai*</label>
+                                        <input type="date" name="doctor.start_date" className="form-control wizard-required" value={formData.doctor.start_date || ''} onChange={handleChange} />
+                                    </div>
+                                    <div className="col-sm-6">
                                         <label className="form-label">Telepon*</label>
                                         <input type="text" name="doctor.phone" className="form-control wizard-required" placeholder="Masukkan Nomor Telepon" value={formData.doctor.phone} onChange={handleChange} />
                                     </div>
@@ -784,34 +809,21 @@ const CreatePatientVisit = () => {
 
                             {/* Step 7: Persetujuan (General Consent) */}
                             <fieldset className={`wizard-fieldset ${currentStep === 6 ? "show" : ""}`}>
-                                <h6 className="text-md text-neutral-500">Persetujuan Umum</h6>
-                                <div className="mb-3">
-                                    <p>
-                                        Dengan ini saya (<b>{formData.patient.identity.full_name || "-"}</b>) dan penanggung jawab (<b>{formData.responsible_person.full_name || "-"}</b>) menyatakan telah memahami dan menyetujui seluruh prosedur pelayanan medis yang akan dilakukan di fasilitas ini.
-                                    </p>
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Tanda Tangan Persetujuan</label>
-                                    <div>
-                                        {!formData.signature && (
-                                            <button type="button" className="btn btn-outline-primary mb-2" onClick={() => setShowSignatureModal(true)}>
-                                                Tanda Tangan
-                                            </button>
-                                        )}
-                                        {formData.signature && (
-                                            <div className="mt-2">
-                                                <img src={formData.signature} alt="Tanda Tangan" style={{ width: 350, height: 150, objectFit: "contain" }} />
-                                                <div><span className="text-success">Tanda tangan sudah diisi</span></div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <SignatureModal
-                                        show={showSignatureModal}
-                                        onClose={() => setShowSignatureModal(false)}
-                                        onSave={handleSignatureSave}
-                                        initialSignature={formData.signature}
-                                    />
-                                </div>
+                                <GeneralConsentSection
+                                    patientName={formData.patient.identity.full_name}
+                                    responsibleName={formData.responsible_person.full_name}
+                                    signature={formData.signature}
+                                    onSignClick={() => setShowSignatureModal(true)}
+                                    showSignatureModal={
+                                        <SignatureModal
+                                            show={showSignatureModal}
+                                            onClose={() => setShowSignatureModal(false)}
+                                            onSave={handleSignatureSave}
+                                            initialSignature={formData.signature}
+                                        />
+                                    }
+                                    setShowSignatureModal={setShowSignatureModal}
+                                />
                                 <div className="form-group d-flex align-items-center justify-content-end gap-8 mt-4">
                                     <button type="button" onClick={handleBack} className="form-wizard-previous-btn btn btn-neutral-500 border-neutral-100 px-32 d-flex align-items-center justify-content-center">
                                         <Icon icon="ic:round-arrow-back" className="icon me-2" /> Kembali

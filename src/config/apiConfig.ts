@@ -1,6 +1,5 @@
-// not used
 const apiConfig: { baseUrl: string } = {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://indisite.yuka.biz.id:33001/',
 };
 
 export default apiConfig;

@@ -149,128 +149,126 @@ const MasterLayout = ({children}) => {
 
                             {/*Master Data*/}
                             <li className='sidebar-menu-group-title'>Master Data</li>
-                            <li>
-                                <Link
-                                    href='/page/master-data/branch-types'
-                                    className={pathname === "/page/master-data/branch-types" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:batch-job' className='menu-icon'/>
-                                    <span>Branch Types</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href='/page/master-data/roles'
-                                    className={pathname === "/page/master-data/roles" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:share-knowledge' className='menu-icon'/>
-                                    <span>Roles</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href='/page/master-data/features'
-                                    className={pathname === "/page/master-data/features" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:data-unreal' className='menu-icon'/>
-                                    <span>Features</span>
-                                </Link>
-                            </li>
-                            {/*End Master Data*/}
-
-                            {/*Core*/}
-                            <li className='sidebar-menu-group-title'>Core</li>
-                            <li>
-                                <Link
-                                    href='/page/core/organizations'
-                                    className={pathname === "/page/core/organizations" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:building' className='menu-icon'/>
-                                    <span>Organisasi</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href='/page/core/branchs'
-                                    className={pathname === "/page/core/branchs" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:store' className='menu-icon'/>
-                                    <span>Branch</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href='/page/core/accounts'
-                                    className={pathname === "/page/core/accounts" ? "active-page" : ""}
-                                >
-                                    <Icon icon='carbon:group-security' className='menu-icon'/>
-                                    <span>Akun</span>
-                                </Link>
-                            </li>
-                            {/*End Core*/}
-
+                            {/*Core */}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/master-data/branch-types'*/}
+                            {/*        className={pathname === "/page/master-data/branch-types" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:batch-job' className='menu-icon'/>*/}
+                            {/*        <span>Branch Types</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/master-data/roles'*/}
+                            {/*        className={pathname === "/page/master-data/roles" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:share-knowledge' className='menu-icon'/>*/}
+                            {/*        <span>Roles</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/master-data/features'*/}
+                            {/*        className={pathname === "/page/master-data/features" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:data-unreal' className='menu-icon'/>*/}
+                            {/*        <span>Features</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
                             {/*Clinic*/}
-                            <li className='sidebar-menu-group-title'>Clinic</li>
                             <li>
                                 <Link href='/page/clinic/doctors' className={pathname === "/page/clinic/doctors" ? "active-page" : ""}>
                                     <Icon icon='mdi:doctor' className='menu-icon'/>
-                                    <span>Doctors</span>
+                                    <span>Dokter</span>
                                 </Link>
-                            </li>
-                            <li>
-                                <Link href='/page/clinic/patients' className={pathname === "/page/clinic/patients" ? "active-page" : ""}>
-                                    <Icon icon='mdi:account-group' className='menu-icon'/>
-                                    <span>Patients</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href='/page/clinic/patientvisits' className={pathname === "/page/clinic/patientvisits" ? "active-page" : ""}>
-                                    <Icon icon='mdi:clipboard-list-outline' className='menu-icon'/>
-                                    <span>Patient Visits</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href='/page/clinic/polyclinics' className={pathname === "/page/clinic/polyclinics" ? "active-page" : ""}>
-                                    <Icon icon='mdi:hospital-building' className='menu-icon'/>
-                                    <span>Polyclinics</span>
-                                </Link>
-                            </li>
+                            </li><li>
+                            <Link href='/page/clinic/polyclinics' className={pathname === "/page/clinic/polyclinics" ? "active-page" : ""}>
+                                <Icon icon='mdi:hospital-building' className='menu-icon'/>
+                                <span>Polikinik</span>
+                            </Link>
+                        </li>
                             <li>
                                 <Link href='/page/clinic/schedules' className={pathname === "/page/clinic/schedules" ? "active-page" : ""}>
                                     <Icon icon='mdi:calendar-clock' className='menu-icon'/>
-                                    <span>Schedules</span>
+                                    <span>Jadwal</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href='/page/clinic/treatments' className={pathname === "/page/clinic/treatments" ? "active-page" : ""}>
                                     <Icon icon='mdi:medical-bag' className='menu-icon'/>
-                                    <span>Treatment</span>
+                                    <span>Jenis Perawatan</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href='/page/clinic/visittypes' className={pathname === "/page/clinic/visittypes" ? "active-page" : ""}>
                                     <Icon icon='mdi:account-arrow-right' className='menu-icon'/>
-                                    <span>Visit Types</span>
+                                    <span>Jenis Kunjungan</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href='/page/clinic/insurances' className={pathname === "/page/clinic/insurances" ? "active-page" : ""}>
                                     <Icon icon='mdi:shield-check' className='menu-icon'/>
-                                    <span>Insurances</span>
+                                    <span>Pembiayaan</span>
+                                </Link>
+                            </li>
+                            {/*End Master Data*/}
+
+                            {/*Core*/}
+                            {/*<li className='sidebar-menu-group-title'>Core</li>*/}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/core/organizations'*/}
+                            {/*        className={pathname === "/page/core/organizations" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:building' className='menu-icon'/>*/}
+                            {/*        <span>Organisasi</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/core/branchs'*/}
+                            {/*        className={pathname === "/page/core/branchs" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:store' className='menu-icon'/>*/}
+                            {/*        <span>Branch</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <Link*/}
+                            {/*        href='/page/core/accounts'*/}
+                            {/*        className={pathname === "/page/core/accounts" ? "active-page" : ""}*/}
+                            {/*    >*/}
+                            {/*        <Icon icon='carbon:group-security' className='menu-icon'/>*/}
+                            {/*        <span>Akun</span>*/}
+                            {/*    </Link>*/}
+                            {/*</li>*/}
+                            {/*End Core*/}
+
+                            {/*Clinic*/}
+                            <li className='sidebar-menu-group-title'>Clinic</li>
+                            <li>
+                                <Link href='/page/clinic/patients' className={pathname === "/page/clinic/patients" ? "active-page" : ""}>
+                                    <Icon icon='mdi:account-group' className='menu-icon'/>
+                                    <span>Pasien</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href='/page/clinic/patientvisits' className={pathname === "/page/clinic/patientvisits" ? "active-page" : ""}>
+                                    <Icon icon='mdi:clipboard-list-outline' className='menu-icon'/>
+                                    <span>Pendaftaran</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href='/page/clinic/initialassesments' className={pathname === "/page/clinic/initialassesments" ? "active-page" : ""}>
+                                    <Icon icon='mdi:clipboard-text-clock-outline' className='menu-icon'/>
+                                    <span>Pengkajian Awal</span>
                                 </Link>
                             </li>
                             {/*End Clinic*/}
 
                             <li className='sidebar-menu-group-title'>Application</li>
-                            <li>
-                                <Link
-                                    href='/email'
-                                    className={pathname === "/email" ? "active-page" : ""}
-                                >
-                                    <Icon icon='mage:email' className='menu-icon'/>
-                                    <span>Email</span>
-                                </Link>
-                            </li>
                             {/*End Core*/}
 
                             {/* Settings Dropdown */}

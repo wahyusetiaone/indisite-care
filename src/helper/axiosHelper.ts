@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import Cookies from 'js-cookie';
-import { apiConfig } from "../config/apiConfig";
-const baseUrl = apiConfig;
+import apiConfig from "../config/apiConfig";
 
 // Helper untuk mendapatkan Token (customize sesuai kebutuhan Anda, misal dari localStorage)
 const getToken = (): string | null => {
@@ -11,7 +10,7 @@ const getToken = (): string | null => {
 // Fungsi untuk membuat instance Axios tanpa autentikasi
 export const createAxiosWithoutAuth = (proxy: string): AxiosInstance => {
     const axiosInstance = axios.create({
-        baseURL: baseUrl+proxy,
+        baseURL: apiConfig.baseUrl+proxy,
         timeout: 10000, // Timeout untuk request
         headers: {
             "Accept": "application/json", // Default headers
@@ -24,7 +23,7 @@ export const createAxiosWithoutAuth = (proxy: string): AxiosInstance => {
         (config: InternalAxiosRequestConfig) => {
             // 🔍 Log request detail
             console.log('[Axios Request]', {
-                url: config.baseURL + config.url,
+                url: config.baseURL+config.url,
                 method: config.method,
                 headers: config.headers,
                 data: config.data,
@@ -71,7 +70,7 @@ export const createAxiosWithoutAuth = (proxy: string): AxiosInstance => {
 // Fungsi untuk membuat instance Axios dengan autentikasi Bearer token
 export const createAxiosWithAuth = (proxy: string): AxiosInstance => {
     const axiosInstance = axios.create({
-        baseURL: baseUrl+proxy,
+        baseURL: apiConfig.baseUrl+proxy,
         timeout: 10000,
         headers: {
             "Accept": "application/json", // Default headers
@@ -91,7 +90,7 @@ export const createAxiosWithAuth = (proxy: string): AxiosInstance => {
 
             // 🔍 Log request detail
             console.log('[Axios Request]', {
-                url: config.baseURL + config.url,
+                url: config.baseURL+config.url,
                 method: config.method,
                 headers: config.headers,
                 data: config.data,

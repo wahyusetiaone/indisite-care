@@ -8,10 +8,17 @@ module.exports = {
             autorestart: true
         },
         {
-            name: "node-dev-app",
+            name: "medical-record-dev",
             script: "npm",
             args: "run dev",
-            watch: true,
+            watch: false,
+            autorestart: true
+        },
+        {
+            name: "medical-record-prod",
+            script: "npm",
+            args: "run start",
+            watch: false,
             autorestart: true
         }
     ]

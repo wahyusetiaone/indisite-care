@@ -6,10 +6,15 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
 const initialForm = {
+  nik: "",
+  satu_sehat_id: "",
   name: "",
   specialty: "",
+  address: "",
+  city: "",
   phone: "",
-  email: "",
+  str_number: "",
+  start_date: "",
   is_active: true,
 };
 
@@ -31,10 +36,15 @@ export default function EditDoctor() {
       fetchDoctorById(doctorId)
         .then((data) => {
           setForm({
+            nik: data.data.nik || "",
+            satu_sehat_id: data.data.satu_sehat_id || "",
             name: data.data.name || "",
             specialty: data.data.specialty || "",
+            address: data.data.address || "",
+            city: data.data.city || "",
             phone: data.data.phone || "",
-            email: data.data.email || "",
+            str_number: data.data.str_number || "",
+            start_date: data.data.start_date || "",
             is_active: data.is_active ?? true,
           });
         })
@@ -86,76 +96,120 @@ export default function EditDoctor() {
             ref={formRef}
           >
             <div className="col-md-6">
+              <label className="form-label">NIK</label>
+              <input
+                type="text"
+                name="nik"
+                className="form-control"
+                placeholder="Masukkan NIK"
+                value={form.nik}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan NIK</div>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">ID Satu Sehat</label>
+              <input
+                type="text"
+                name="satu_sehat_id"
+                className="form-control"
+                placeholder="Masukkan ID Satu Sehat"
+                value={form.satu_sehat_id}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan ID Satu Sehat</div>
+            </div>
+            <div className="col-md-6">
               <label className="form-label">Nama</label>
-              <div className="icon-field has-validation">
-                <span className="icon">
-                  <Icon icon="f7:person" />
-                </span>
-                <input
-                  type="text"
-                  name="name"
-                  className="form-control"
-                  placeholder="Masukkan Nama"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                />
-                <div className="invalid-feedback">Silakan masukkan nama</div>
-              </div>
+              <input
+                type="text"
+                name="name"
+                className="form-control"
+                placeholder="Masukkan Nama"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan nama</div>
             </div>
             <div className="col-md-6">
               <label className="form-label">Spesialisasi</label>
-              <div className="icon-field has-validation">
-                <span className="icon">
-                  <Icon icon="f7:person" />
-                </span>
-                <input
-                  type="text"
-                  name="specialty"
-                  className="form-control"
-                  placeholder="Masukkan Spesialisasi"
-                  value={form.specialty}
-                  onChange={handleChange}
-                  required
-                />
-                <div className="invalid-feedback">Silakan masukkan spesialisasi</div>
-              </div>
+              <input
+                type="text"
+                name="specialty"
+                className="form-control"
+                placeholder="Masukkan Spesialisasi"
+                value={form.specialty}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan spesialisasi</div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Email</label>
-              <div className="icon-field has-validation">
-                <span className="icon">
-                  <Icon icon="mage:email" />
-                </span>
-                <input
-                  type="email"
-                  name="email"
-                  className="form-control"
-                  placeholder="Masukkan Email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                />
-                <div className="invalid-feedback">Silakan masukkan alamat email</div>
-              </div>
+              <label className="form-label">Alamat</label>
+              <input
+                type="text"
+                name="address"
+                className="form-control"
+                placeholder="Masukkan Alamat"
+                value={form.address}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan alamat</div>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Kota</label>
+              <input
+                type="text"
+                name="city"
+                className="form-control"
+                placeholder="Masukkan Kota"
+                value={form.city}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan kota</div>
             </div>
             <div className="col-md-6">
               <label className="form-label">Telepon</label>
-              <div className="icon-field has-validation">
-                <span className="icon">
-                  <Icon icon="solar:phone-calling-linear" />
-                </span>
-                <input
-                  type="text"
-                  name="phone"
-                  className="form-control"
-                  placeholder="Masukkan Nomor Telepon"
-                  value={form.phone}
-                  onChange={handleChange}
-                  required
-                />
-                <div className="invalid-feedback">Silakan masukkan nomor telepon</div>
-              </div>
+              <input
+                type="text"
+                name="phone"
+                className="form-control"
+                placeholder="Masukkan Nomor Telepon"
+                value={form.phone}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan nomor telepon</div>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Nomor STR</label>
+              <input
+                type="text"
+                name="str_number"
+                className="form-control"
+                placeholder="Masukkan Nomor STR"
+                value={form.str_number}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan nomor STR</div>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Tanggal Mulai</label>
+              <input
+                type="date"
+                name="start_date"
+                className="form-control"
+                value={form.start_date}
+                onChange={handleChange}
+                required
+              />
+              <div className="invalid-feedback">Silakan masukkan tanggal mulai</div>
             </div>
             <div className="col-md-6">
               <label className="form-label">Aktif</label>
